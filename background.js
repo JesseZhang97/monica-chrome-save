@@ -99,31 +99,55 @@ async function getSelectionText(tabId) {
   }
 }
 
-async function savePayload(tab, { url, title, selection }) {
+async function sendContent(tab, content) {
   const config = await getConfig();
   if (!isConfigured(config)) {
-    notify(tab?.id, {
+    const result = {
       ok: false,
       kind: "config",
       status: 0,
       message: "Missing config — set webhook URL and Bearer key in Options",
-    });
+    };
+    notify(tab?.id, result);
     chrome.runtime.openOptionsPage().catch(() => {});
-    return;
+    return result;
   }
 
   const allowed = await hasOriginPermission(config.webhookUrl);
   if (!allowed) {
-    notify(tab?.id, {
+    const result = {
       ok: false,
       kind: "permission",
       status: 0,
       message: "Host permission missing — open Options, save, and allow access",
-    });
+    };
+    notify(tab?.id, result);
     chrome.runtime.openOptionsPage().catch(() => {});
-    return;
+    return result;
   }
 
+  const body = String(content ?? "").trim();
+  if (!body) {
+    const result = {
+      ok: false,
+      kind: "config",
+      status: 0,
+      message: "Content is empty",
+    };
+    notify(tab?.id, result);
+    return result;
+  }
+
+  const result = await postToMonica({
+    webhookUrl: config.webhookUrl,
+    webhookKey: config.webhookKey,
+    content: body,
+  });
+  notify(tab?.id, result);
+  return result;
+}
+
+async function savePayload(tab, { url, title, selection }) {
   const href = String(url || "").trim();
   if (!href) {
     notify(tab?.id, {
@@ -140,27 +164,7 @@ async function savePayload(tab, { url, title, selection }) {
     url: href,
     selection: selection || "",
   });
-
-  const result = await postToMonica({
-    webhookUrl: config.webhookUrl,
-    webhookKey: config.webhookKey,
-    content,
-  });
-  notify(tab?.id, result);
-}
-
-async function saveActiveTab(tab) {
-  let current = tab;
-  if (!current?.id) {
-    const [queried] = await chrome.tabs.query({ active: true, currentWindow: true });
-    current = queried;
-  }
-  const selection = await getSelectionText(current?.id);
-  await savePayload(current, {
-    url: current?.url,
-    title: current?.title,
-    selection,
-  });
+  await sendContent(tab, content);
 }
 
 async function createMenus() {
@@ -176,12 +180,22 @@ chrome.runtime.onInstalled.addListener(() => {
   createMenus();
 });
 
-chrome.action.onClicked.addListener((tab) => {
-  saveActiveTab(tab);
-});
-
-chrome.commands.onCommand.addListener((command) => {
-  if (command === "save-to-monica") saveActiveTab();
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (sender.id !== chrome.runtime.id) return;
+  if (message?.type !== "save-content") return;
+  (async () => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const result = await sendContent(tab, message.content);
+    sendResponse(result);
+  })().catch(() => {
+    sendResponse({
+      ok: false,
+      kind: "error",
+      status: 0,
+      message: "Save failed",
+    });
+  });
+  return true;
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {

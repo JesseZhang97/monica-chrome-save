@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Save to Monica</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <form id="form">
+      <header>
+        <p class="eyebrow">Monica Chrome Save</p>
+        <h1>Compose</h1>
+      </header>
+
+      <label>
+        <span>Content</span>
+        <textarea
+          id="content"
+          name="content"
+          rows="9"
+          spellcheck="true"
+          placeholder="标题: …&#10;链接: …"
+        ></textarea>
+      </label>
+
+      <p class="hint">Prefills the current tab. Edit or add notes, then Send.</p>
+
+      <div class="actions">
+        <button type="submit" id="send">Send</button>
+        <button type="button" id="options" class="secondary">Options</button>
+      </div>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </form>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
