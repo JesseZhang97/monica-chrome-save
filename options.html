@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monica Chrome Save — Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Monica Chrome Save</p>
+        <h1>Webhook settings</h1>
+        <p class="lede">
+          Same protocol as the iOS Shortcut: <code>POST</code> JSON
+          <code>{ "content": "…" }</code> with a Bearer key. The key is stored
+          only in this browser profile.
+        </p>
+      </header>
+
+      <form id="form" autocomplete="off">
+        <label>
+          <span>Webhook URL</span>
+          <input
+            id="webhookUrl"
+            name="webhookUrl"
+            type="url"
+            inputmode="url"
+            spellcheck="false"
+            placeholder="https://…"
+            required
+          />
+        </label>
+
+        <label>
+          <span>Bearer key</span>
+          <input
+            id="webhookKey"
+            name="webhookKey"
+            type="password"
+            spellcheck="false"
+            autocomplete="off"
+            placeholder="Paste key — never committed"
+            required
+          />
+        </label>
+
+        <div class="actions">
+          <button type="submit" id="save">Save</button>
+          <button type="button" id="test" class="secondary">Test</button>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <section class="notes">
+        <h2>What Save sends</h2>
+        <pre>标题: {page title}
+链接: {url}
+
+{selected text, if any}</pre>
+        <p>
+          Test posts that template with a dummy title/URL and reports
+          <strong>HTTP status only</strong> — it never prints the key or response body.
+          Chrome will ask for permission to contact the webhook origin when you Save or Test.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>
