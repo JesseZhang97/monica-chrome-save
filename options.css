@@ -1,0 +1,177 @@
+:root {
+  --ink: #12262c;
+  --muted: #5c6d73;
+  --paper: #f3efe6;
+  --card: #fffdf8;
+  --line: #d9d1c3;
+  --teal: #0f766e;
+  --teal-ink: #f4faf9;
+  --err: #9f1239;
+  --ok: #0f766e;
+  --warn: #b45309;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font: 16px/1.5 "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 400px at 10% -10%, #d7efe9 0%, transparent 55%),
+    var(--paper);
+}
+
+main {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 3rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: var(--teal);
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+}
+
+code,
+pre {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+code {
+  font-size: 0.88em;
+  background: #efe8d8;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+form,
+.notes {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.25rem 1.25rem 1.1rem;
+  box-shadow: 0 10px 30px rgba(18, 38, 44, 0.06);
+}
+
+label {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+label span {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+
+input:focus {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+button {
+  appearance: none;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  background: var(--teal);
+  color: var(--teal-ink);
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.status {
+  min-height: 1.5em;
+  margin: 0.9rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.status[data-kind="ok"] {
+  color: var(--ok);
+}
+
+.status[data-kind="err"] {
+  color: var(--err);
+}
+
+.status[data-kind="warn"] {
+  color: var(--warn);
+}
+
+.notes {
+  margin-top: 1rem;
+}
+
+.notes h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.notes pre {
+  margin: 0 0 0.75rem;
+  padding: 0.75rem 0.85rem;
+  background: #12262c;
+  color: #e7f3ef;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  overflow: auto;
+}
+
+.notes p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
