@@ -170,6 +170,7 @@ Vanilla JS, no build step, no dependencies.
 | `lib/menus.js`, `lib/menu-save.js`, `lib/toolbar.js` | Context-menu layout, context-menu save, badge + tooltip. |
 | `styles/ui.css` | Design tokens and base controls shared by `popup.*` and `options.*` (light theme only, see [Look](#look)). |
 | `icons/logo.svg` | Logo source. `python3 scripts/generate-icons.py` renders `icons/icon{16,32,48,128}.png` and the 1024 px store master `icons/logo-1024.png` (gitignored) with ffmpeg + librsvg. |
+| `scripts/package.mjs` | `node scripts/package.mjs` builds the store zip into `dist/` (git-ignored). It ships every tracked file except tests, docs, scripts and `*.md`, and fails if the manifest, a page, a stylesheet or a script refers to a file that is not in the zip (this is what `tests/package.test.mjs` also checks). Do not hand-pick files for the store zip. |
 
 Unit tests (Node 18+):
 
