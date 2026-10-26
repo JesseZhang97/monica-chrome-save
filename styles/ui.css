@@ -1,0 +1,290 @@
+/*
+ * Shared design tokens and base controls for popup.html and options.html.
+ * Brand colors come from icons/logo.svg (teal tile, amber spark).
+ */
+:root {
+  color-scheme: light dark;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  --bg: #f3f6f5;
+  --surface: #ffffff;
+  --surface-2: #eaf0ef;
+  --line: #d3dcda;
+  --ink: #132120;
+  --muted: #586967;
+
+  --brand: #0f766e;
+  --brand-hover: #0b5e58;
+  --brand-ink: #ffffff;
+  --brand-soft: #dff1ee;
+  --accent: #fbbf24;
+
+  --ok: #15803d;
+  --ok-soft: #e3f6e8;
+  --err: #b91c1c;
+  --err-soft: #fde8e8;
+  --warn: #a16207;
+  --warn-soft: #fdf3d7;
+
+  --focus: #0f766e;
+  --shadow: 0 1px 2px rgba(10, 30, 28, 0.06), 0 8px 24px rgba(10, 30, 28, 0.08);
+  --backdrop: rgba(10, 24, 23, 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1413;
+    --surface: #152020;
+    --surface-2: #1c2a29;
+    --line: #2c3d3b;
+    --ink: #e2ecea;
+    --muted: #94a7a4;
+
+    --brand: #2dd4bf;
+    --brand-hover: #5eead4;
+    --brand-ink: #04211e;
+    --brand-soft: #123a36;
+
+    --ok: #4ade80;
+    --ok-soft: #12301f;
+    --err: #f87171;
+    --err-soft: #3a1818;
+    --warn: #fbbf24;
+    --warn-soft: #362a0d;
+
+    --focus: #5eead4;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --backdrop: rgba(0, 0, 0, 0.6);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  font: 14px/1.5 var(--font-sans);
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--font-mono);
+}
+
+/* ---- buttons ---------------------------------------------------------- */
+
+button {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 34px;
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--brand);
+  color: var(--brand-ink);
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--brand-hover);
+}
+
+button.small {
+  min-height: 28px;
+  padding: 0 var(--space-3);
+  font-size: 13px;
+}
+
+button.secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+button.secondary:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+button.danger {
+  background: var(--err);
+  color: #fff;
+}
+
+button.danger:hover:not(:disabled) {
+  background: var(--err);
+  filter: brightness(1.08);
+}
+
+button.ghost-danger {
+  background: transparent;
+  color: var(--err);
+  border-color: var(--line);
+}
+
+button.ghost-danger:hover:not(:disabled) {
+  background: var(--err-soft);
+}
+
+button.icon {
+  min-height: 32px;
+  width: 32px;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+}
+
+button.icon:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+button.link {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+button.link:hover:not(:disabled) {
+  background: none;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* ---- form controls ----------------------------------------------------- */
+
+input[type="text"],
+input[type="url"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+input[aria-invalid="true"] {
+  border-color: var(--err);
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--brand);
+}
+
+/* One focus treatment everywhere: visible on light and dark surfaces. */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+input:not([type="checkbox"]):focus-visible,
+textarea:focus-visible {
+  outline-offset: -1px;
+}
+
+kbd {
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--muted);
+}
+
+/* ---- small pieces ------------------------------------------------------ */
+
+.pill {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+[data-kind="ok"] {
+  color: var(--ok);
+}
+
+[data-kind="err"] {
+  color: var(--err);
+}
+
+[data-kind="warn"] {
+  color: var(--warn);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

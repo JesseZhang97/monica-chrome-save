@@ -29,6 +29,7 @@ let phase = "idle";
 /** Targets of the current attempt and their results, rendered as rows. */
 let batch = [];
 const results = new Map();
+let inFlightId = null;
 /** Guards the main form and the "上次发送失败" retry against overlapping sends. */
 let busy = false;
 /** The stored failed save currently offered for resend, or null. */
@@ -57,17 +58,14 @@ function sendTo(webhookId, content) {
 
 // ---- target picker -------------------------------------------------------
 
-function renderTargets() {
+/** Built once; toggling a box only updates the label so keyboard focus stays put. */
+function buildTargets() {
   const single = state.webhooks.length === 1;
   $("target-single").hidden = !single;
   pickerEl.hidden = single;
   if (single) {
     $("target-name").textContent = state.webhooks[0].name;
   } else {
-    const names = targets.map(nameOf);
-    $("picker-label").textContent =
-      names.length === 0 ? "未选择" : names.length <= 2 ? names.join("、") : `${names[0]} 等 ${names.length} 个`;
-    pickerListEl.querySelectorAll("label").forEach((el) => el.remove());
     for (const hook of state.webhooks) {
       const label = document.createElement("label");
       label.className = "picker-option";
@@ -87,6 +85,13 @@ function renderTargets() {
       pickerListEl.append(label);
     }
   }
+  renderTargetLabel();
+}
+
+function renderTargetLabel() {
+  const names = targets.map(nameOf);
+  $("picker-label").textContent =
+    names.length === 0 ? "未选择" : names.length <= 2 ? names.join("、") : `${names[0]} 等 ${names.length} 个`;
   renderSendButton();
 }
 
@@ -97,7 +102,7 @@ pickerListEl.addEventListener("change", () => {
   savePopupTargets(targets);
   resetAttempt();
   if (targets.length === 0) setStatus(statusEl, "请至少选择一个目标", "warn");
-  renderTargets();
+  renderTargetLabel();
 });
 
 pickerEl.querySelector("summary").addEventListener("click", (event) => {
@@ -149,7 +154,7 @@ function renderResults() {
       const text = document.createElement("span");
       text.className = "result-text";
       if (!result) {
-        row.dataset.state = phase === "sending" ? "sending" : "pending";
+        row.dataset.state = id === inFlightId ? "sending" : "pending";
         text.textContent = row.dataset.state === "sending" ? "发送中…" : "等待中";
       } else {
         const view = describeResult(result);
@@ -205,9 +210,11 @@ async function runSend(ids) {
 
   // One at a time so each row reports its own outcome as it lands.
   for (const id of ids) {
+    inFlightId = id;
     renderResults();
     results.set(id, await sendTo(id, content));
   }
+  inFlightId = null;
 
   busy = false;
   contentEl.readOnly = false;
@@ -386,6 +393,6 @@ if (state.webhooks.length === 0) {
   $("setup-open").focus();
 } else {
   formEl.hidden = false;
-  renderTargets();
+  buildTargets();
   await prefill();
 }

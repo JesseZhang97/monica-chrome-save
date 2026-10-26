@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <title>Monica Chrome Save</title>
+  <!--
+    Bookmark ribbon (saved item) + four-point spark (signal sent to the
+    Monica agent). Straight edges sit on multiples of 8 units so the 16, 32
+    and 48 px renders land on whole pixels. Colors match the UI tokens:
+    brand teal #0F766E -> #0B5550, accent amber #FBBF24.
+  -->
+  <defs>
+    <linearGradient id="tile" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="128" y2="128">
+      <stop offset="0" stop-color="#14857B"/>
+      <stop offset="1" stop-color="#0B5550"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#tile)"/>
+  <path d="M24 32a8 8 0 0 1 8-8h40a8 8 0 0 1 8 8v72l-28-20-28 20z" fill="#FFFFFF"/>
+  <path d="M98 6Q105 23 122 30Q105 37 98 54Q91 37 74 30Q91 23 98 6z" fill="url(#tile)" stroke="url(#tile)" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M98 6Q105 23 122 30Q105 37 98 54Q91 37 74 30Q91 23 98 6z" fill="#FBBF24"/>
+</svg>
