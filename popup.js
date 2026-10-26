@@ -2,7 +2,8 @@ import { describeResult } from "./lib/feedback.js";
 import { buildFailureRecord, clearLastFailure, loadLastFailure, saveLastFailure } from "./lib/failure.js";
 import { buildContent } from "./lib/protocol.js";
 import { loadPopupTargets, loadState, savePopupTargets } from "./lib/store.js";
-import { findWebhook, resolveTargets } from "./lib/webhooks.js";
+import { clearToolbarAlert } from "./lib/toolbar.js";
+import { findWebhook, resolveTargets, webhookOrigin } from "./lib/webhooks.js";
 
 const CLOSE_AFTER_MS = 900;
 const TEXTAREA_MAX_PX = 300;
@@ -30,6 +31,8 @@ let batch = [];
 const results = new Map();
 /** Guards the main form and the "上次发送失败" retry against overlapping sends. */
 let busy = false;
+/** The stored failed save currently offered for resend, or null. */
+let shownFailure = null;
 
 function setStatus(el, text, kind) {
   el.textContent = text;
@@ -269,19 +272,29 @@ function formatTime(ms) {
 }
 
 function renderRecover(record) {
+  shownFailure = record;
   const box = $("recover");
   box.hidden = !record;
   if (!record) return;
-  const reason = describeResult({ ok: false, ...record.error }).text;
+  const reason = describeResult({ ok: false, ...record.error }, { interactive: false }).text;
   $("recover-text").textContent = `发往${quoteNames(record.webhookIds)} · ${formatTime(record.failedAt)} · ${reason}`;
   $("recover-snippet").textContent = record.content.split("\n").find((line) => line.trim()) ?? "";
 }
 
 async function retryLastFailure() {
-  const record = await loadLastFailure();
-  if (!record || busy) return;
+  if (busy || !shownFailure) return;
+  const record = shownFailure;
   const ids = record.webhookIds.filter((id) => findWebhook(state, id));
   const statusBox = $("recover-status");
+  if (record.error.kind === "permission" && ids.length) {
+    // Ask before any other await so the click still counts as a user gesture.
+    const origins = [...new Set(ids.map((id) => webhookOrigin(findWebhook(state, id))).filter(Boolean))];
+    try {
+      await chrome.permissions.request({ origins });
+    } catch (error) {
+      console.warn("Monica Chrome Save: permission request failed", error);
+    }
+  }
   if (ids.length === 0) {
     contentEl.value = record.content;
     autosize();
@@ -305,10 +318,9 @@ async function retryLastFailure() {
     }
   }
   busy = false;
-  $("recover-retry").disabled = false;
-  $("recover-discard").disabled = false;
   if (failed.length === 0) {
     await clearLastFailure();
+    shownFailure = null;
     setStatus(statusBox, `已重发到${quoteNames(ids)}`, "ok");
     setTimeout(() => {
       renderRecover(null);
@@ -319,7 +331,9 @@ async function retryLastFailure() {
   const next = buildFailureRecord({ content: record.content, webhookIds: failed, result: lastError, now: Date.now() });
   await saveLastFailure(next);
   renderRecover(next);
-  setStatus(statusBox, `重发失败:${describeResult(lastError).text}`, "err");
+  $("recover-retry").disabled = false;
+  $("recover-discard").disabled = false;
+  setStatus(statusBox, `重发失败:${describeResult(lastError, { interactive: false }).text}`, "err");
   $("recover-retry").focus();
 }
 
@@ -362,6 +376,8 @@ $("setup-open").addEventListener("click", () => {
 });
 $("shortcut").textContent = /Mac/i.test(navigator.userAgentData?.platform || navigator.platform) ? "⌘ Enter" : "Ctrl Enter";
 
+// The badge/tooltip pointed the user here; the popup now shows the details.
+clearToolbarAlert();
 state = await loadState();
 targets = resolveTargets(state, await loadPopupTargets());
 renderRecover(await loadLastFailure());

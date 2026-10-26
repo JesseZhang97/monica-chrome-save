@@ -46,6 +46,12 @@ test("missing host permission offers the authorize action", () => {
   assert.equal(view.badge, "PERM");
 });
 
+test("outside the popup the permission text does not promise a clickable link", () => {
+  const result = { ok: false, kind: "permission", status: 0, origin: "https://h.example/*" };
+  assert.equal(describeResult(result, { interactive: false }).text, "未授权访问该域名");
+  assert.equal(headline(result, "A", { interactive: false }), "保存到「A」失败:未授权访问该域名");
+});
+
 test("config problems point to settings", () => {
   for (const kind of ["config", "missing"]) {
     const view = describeResult({ ok: false, kind, status: 0 });
