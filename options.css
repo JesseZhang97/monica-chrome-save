@@ -21,13 +21,9 @@ main {
   margin-bottom: var(--space-3);
 }
 
-.brand img {
-  border-radius: 10px;
-}
-
 .eyebrow {
   margin: 0;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 11px;
   font-weight: 700;
@@ -38,11 +34,13 @@ h1 {
   margin: 0;
   font-size: 24px;
   line-height: 1.25;
+  color: var(--navy);
 }
 
 h2 {
   margin: 0;
   font-size: 16px;
+  color: var(--navy);
 }
 
 .lede {
@@ -52,18 +50,20 @@ h2 {
 
 code {
   padding: 1px 5px;
-  border-radius: 4px;
-  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--navy);
   font-size: 0.86em;
 }
 
 .panel {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
   padding: var(--space-5);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 
 .panel-head {
@@ -72,6 +72,8 @@ code {
   justify-content: space-between;
   gap: var(--space-4);
   margin-bottom: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
 }
 
 /* ---- list --------------------------------------------------------------- */
@@ -88,7 +90,8 @@ code {
   align-items: flex-start;
   justify-content: space-between;
   padding: 14px 0;
-  border-top: 1px solid var(--line);
+  /* Dashed like the tear line between stamps. */
+  border-top: 1px dashed var(--line);
 }
 
 .hook:first-child {
@@ -105,6 +108,7 @@ code {
   gap: var(--space-2);
   margin: 0;
   font-weight: 650;
+  color: var(--navy);
 }
 
 .hook-meta {
@@ -140,14 +144,11 @@ code {
   text-align: center;
 }
 
-.empty img {
-  border-radius: 14px;
-}
-
 .empty-title {
-  margin: var(--space-3) 0 var(--space-1);
+  margin: var(--space-4) 0 var(--space-1);
   font-weight: 700;
   font-size: 16px;
+  color: var(--navy);
 }
 
 .empty-text {
@@ -167,6 +168,7 @@ code {
   margin-bottom: 6px;
   font-size: 13px;
   font-weight: 650;
+  color: var(--navy);
 }
 
 .field-hint,
@@ -213,13 +215,16 @@ code {
 
 /* ---- notes -------------------------------------------------------------- */
 
+/* Same cream ruled paper as the popup compose box. */
 .notes pre {
   margin: var(--space-3) 0;
-  padding: var(--space-3) 14px;
+  padding: var(--space-2) 14px;
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--surface-2);
+  background: linear-gradient(transparent 19px, var(--rule) 19px) 0 0 / 100% 20px content-box, var(--paper);
   color: var(--ink);
   font-size: 13px;
+  line-height: 20px;
   overflow: auto;
 }
 
@@ -233,12 +238,12 @@ code {
 
 dialog {
   max-width: 26rem;
-  padding: var(--space-5);
+  padding: calc(var(--space-5) + 5px) var(--space-5) var(--space-5);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
-  background: var(--surface);
+  background: var(--airmail) top / 100% 5px no-repeat, var(--surface);
   color: var(--ink);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 
 dialog::backdrop {
