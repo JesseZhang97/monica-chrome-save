@@ -58,7 +58,7 @@ Decided with Jesse on 2026-10-26. Protocol, request body and Bearer header are u
 - States: sending (spinner, disabled, no double submit) → success (✓ "已保存到「名称」", auto-close after 0.9 s) → failure (plain-language reason + HTTP code, content kept, Retry for failed targets only).
 - Reasons: 401/403 密钥或地址不对; 404 地址不存在; 429 请求过多,稍后再试; 5xx Monica 服务端错误; timeout / network 无法连接; missing origin grant "未授权访问该域名,点此授权" (requests the origin, then retries). Never the key or response body.
 - Requests time out after 15 s (`AbortController`).
-- Cmd/Ctrl+Enter sends. Keyboard operable, visible focus, light/dark via `prefers-color-scheme`. UI copy is Chinese.
+- Cmd/Ctrl+Enter sends. Keyboard operable, visible focus. UI copy is Chinese.
 
 ### Context menu
 - One webhook: "Save to Monica". Several: "Save to ▸ {名称}" (default marked). No "Save to all". Rebuilt whenever the list changes.
@@ -66,7 +66,16 @@ Decided with Jesse on 2026-10-26. Protocol, request body and Bearer header are u
 - A failed save is kept as the single "last failure" (content, webhook id, time, error kind/status; no key, no response body). The failure badge stays until the popup opens, which offers resend or discard. No send history.
 
 ### Brand
-- Logo: teal tile + white bookmark ribbon + amber four-point spark; `icons/logo.svg` is the source, PNGs and a 1024 px master are rendered by `scripts/generate-icons.py`.
+- See v2.1 below (replaces the 2.0 teal bookmark logo and light/dark themes).
+
+## Product — v2.1 (retro postal look)
+Decided with Jesse on 2026-10-26. Visual only: behavior, storage, protocol and permissions are unchanged.
+
+- Style: simple retro mailbox / post office, bright and airy. Light theme only; no dark mode.
+- Palette: pale sky ground, white and cream paper, mailbox red `#D23A2D` as the accent (primary buttons, logo, stamp marks), navy `#1F3A5F` ink, thin sky rules. No green anywhere.
+- Status: success postal blue `#1F4E8C`, failure brick red `#B8281C`, warning burnt orange `#A64B06`, shared by popup, options, toolbar badge and in-page toast.
+- Details: airmail stripe top edge, ruled letter paper, logo as a perforated stamp, outlined stamp tag for the default webhook, dashed tear lines; small radii, clear borders; system fonts only.
+- Logo: red mailbox on a light sky tile with a white letter entering the navy slot (the page is posted to the agent); no text, readable at 16 px. `icons/logo.svg` is the source; `scripts/generate-icons.py` renders the PNGs and a 1024 px master.
 
 ## Acceptance criteria
 - [ ] MV3 extension loads unpacked in Chrome without errors.

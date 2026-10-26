@@ -233,7 +233,7 @@ input[type="checkbox"] {
   accent-color: var(--navy);
 }
 
-/* One focus treatment everywhere: visible on light and dark surfaces. */
+/* One focus treatment everywhere: visible on paper, sky and red surfaces. */
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;

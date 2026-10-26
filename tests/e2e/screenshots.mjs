@@ -62,11 +62,6 @@ async function shoot(session, name, { width, height, popup = false } = {}) {
   note(`screenshot ${name}.jpg`);
 }
 
-const dark = (session, on) =>
-  session.call("Emulation.setEmulatedMedia", {
-    features: [{ name: "prefers-color-scheme", value: on ? "dark" : "light" }],
-  });
-
 mkdirSync(OUT, { recursive: true });
 const mock = await startMockServer();
 const browser = await launchChrome();
@@ -224,8 +219,6 @@ try {
   assert.ok(mock.requests.every((r) => r.method === "POST" && r.bearer && r.bodyKeys?.join() === "content"));
   assert.equal(await p.evaluate("document.getElementById('send-label').textContent"), "重试 4 个失败项");
   await shoot(p, "popup-multi-mixed", { popup: true });
-  await dark(p, true);
-  await shoot(p, "popup-multi-mixed-dark", { popup: true });
   note("popup multi-target", { rows });
 
   // Selection is remembered for the next popup.
@@ -305,9 +298,6 @@ try {
   assert.equal(await p.evaluate("document.getElementById('recover').hidden"), false);
   assert.equal(await opt.evaluate("chrome.action.getBadgeText({})"), "", "popup cleared the badge");
   await shoot(p, "popup-last-failure", { popup: true });
-  await dark(p, true);
-  await shoot(p, "popup-last-failure-dark", { popup: true });
-  await dark(p, false);
   mock.requests.length = 0;
   await p.evaluate("document.getElementById('recover-retry').click()");
   await waitFor(p, "document.getElementById('recover-status').dataset.kind === 'ok'");
@@ -360,9 +350,6 @@ try {
   assert.equal(statuses[1][1], "HTTP 401");
   assert.match(statuses[2][1], /未授权/);
   await shoot(opt, "options-list", { width: 900 });
-  await dark(opt, true);
-  await shoot(opt, "options-list-dark", { width: 900 });
-  await dark(opt, false);
   note("options list + per-row Test", { statuses });
 
   await opt.evaluate("document.querySelectorAll('[data-action=delete]')[1].click()");

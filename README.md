@@ -19,7 +19,7 @@ If nothing is selected, title + URL are still sent.
 
 This extension does **not** write to Feishu and does **not** change Monica routines.
 
-<img src="docs/screenshots/popup-multi-mixed.jpg" width="320" alt="Popup sending to five webhooks with per-target results"> <img src="docs/screenshots/popup-multi-mixed-dark.jpg" width="320" alt="Same popup in dark mode">
+<img src="docs/screenshots/popup-multi-mixed.jpg" width="320" alt="Popup sending to five webhooks with per-target results"> <img src="docs/screenshots/popup-last-failure.jpg" width="320" alt="Popup offering to resend the last failed right-click save">
 
 ## Load unpacked (macOS and Windows)
 
@@ -34,7 +34,7 @@ Chrome steps are the same on both operating systems; only the folder picker look
    - **Mac:** Finder dialog — navigate to the clone, select the folder, Open.
    - **Windows:** Explorer dialog — navigate to the clone, select the folder, Select Folder.
 
-The toolbar gets the Monica Chrome Save icon (teal tile, white bookmark, amber spark). Pin it from the puzzle-piece menu if it is hidden.
+The toolbar gets the Monica Chrome Save icon (red mailbox on a light sky tile, a white letter going into the navy slot). Pin it from the puzzle-piece menu if it is hidden.
 
 Reload the extension on `chrome://extensions` after you pull updates.
 
@@ -80,8 +80,8 @@ Right-click on a link saves the current page title + **that link's href**. Selec
 | State | Popup | Right-click |
 | --- | --- | --- |
 | Sending | Button shows a spinner and is disabled (no double submit); textarea is read-only | — |
-| Success | ✓ `已保存到「名称」`, popup closes after 0.9 s | Badge `OK` (clears after ~3 s), toast, tooltip |
-| Failure | Red reason per target, content kept, button becomes **重试** (retries failed targets only) | Badge with the status code (or `ERR` / `PERM` / `CFG`), toast, tooltip; the content is kept for resend |
+| Success | Blue ✓ `已保存到「名称」`, popup closes after 0.9 s | Blue badge `OK` (clears after ~3 s), toast, tooltip |
+| Failure | Brick-red reason per target (orange for permission/config warnings), content kept, button becomes **重试** (retries failed targets only) | Red (or orange) badge with the status code (or `ERR` / `PERM` / `CFG`), toast, tooltip; the content is kept for resend |
 
 Failure reasons (always with the HTTP code when there is one; never the key or the response body):
 
@@ -168,7 +168,7 @@ Vanilla JS, no build step, no dependencies.
 | `lib/feedback.js` | Result → user-facing text / badge. |
 | `lib/failure.js` | The single kept failure record. |
 | `lib/menus.js`, `lib/menu-save.js`, `lib/toolbar.js` | Context-menu layout, context-menu save, badge + tooltip. |
-| `styles/ui.css` | Design tokens (light/dark) and base controls shared by `popup.*` and `options.*`. |
+| `styles/ui.css` | Design tokens and base controls shared by `popup.*` and `options.*` (light theme only, see [Look](#look)). |
 | `icons/logo.svg` | Logo source. `python3 scripts/generate-icons.py` renders `icons/icon{16,32,48,128}.png` and the 1024 px store master `icons/logo-1024.png` (gitignored) with ffmpeg + librsvg. |
 
 Unit tests (Node 18+):
@@ -186,3 +186,7 @@ node tests/e2e/screenshots.mjs
 It loads the real extension into headless Chrome over a CDP pipe (`Extensions.loadUnpacked`), points webhooks at a local mock server (`tests/e2e/mock-server.mjs`: 200 / 401 / 500 / never-answers / dropped connection), upgrades a configured 1.1.0 install in place to check the migration, drives the popup, options and the context-menu save path, asserts the outcomes and writes `docs/screenshots/*.jpg` plus `docs/screenshots/e2e-log.json`. Limits: the temp copy of the extension grants `http://127.0.0.1/*` up front because headless Chrome cannot answer permission prompts; headless Chrome has no toolbar or native context menu, so the badge and tooltip are read back through `chrome.action`, and menu clicks call the same `saveFromMenu()` the `onClicked` listener uses. Only dummy keys are used.
 
 Do not commit `.pem`, `.crx`, `.env`, or key files (see `.gitignore`).
+
+### Look
+
+Simple retro post office, light theme only (no dark mode): a pale sky ground with white and cream paper, mailbox red `#D23A2D` for primary buttons, the logo and stamp marks, navy `#1F3A5F` ink and thin sky rules. Details are kept small: an airmail stripe along the top edge, ruled letter paper for the compose box, the logo as a perforated stamp, an outlined stamp tag for the default webhook, dashed tear lines between list rows. Status colors avoid green: success postal blue `#1F4E8C`, failure brick red `#B8281C`, warning burnt orange `#A64B06` (popup, badge and toast share them). System fonts only; nothing is loaded from the network.

@@ -2,7 +2,7 @@
   {
     "step": "upgrade migration: v1 webhookUrl/webhookKey became default webhook 'Monica', legacy keys removed",
     "from": "41d5abb (1.1.0)",
-    "to": "2.0.0"
+    "to": "2.1.0"
   },
   {
     "step": "screenshot popup-empty.jpg"
@@ -43,7 +43,7 @@
   },
   {
     "step": "popup timeout",
-    "approxMs": 14827
+    "approxMs": 14822
   },
   {
     "step": "popup retry via Ctrl+Enter resent edited content",
@@ -54,9 +54,6 @@
   },
   {
     "step": "screenshot popup-multi-mixed.jpg"
-  },
-  {
-    "step": "screenshot popup-multi-mixed-dark.jpg"
   },
   {
     "step": "popup multi-target",
@@ -117,7 +114,7 @@
         "kind": "http",
         "status": 401
       },
-      "failedAt": 1792984234701,
+      "failedAt": 1792987544471,
       "webhookIds": [
         "b"
       ]
@@ -130,9 +127,6 @@
   },
   {
     "step": "screenshot popup-last-failure.jpg"
-  },
-  {
-    "step": "screenshot popup-last-failure-dark.jpg"
   },
   {
     "step": "screenshot popup-last-failure-resent.jpg"
@@ -156,9 +150,6 @@
   },
   {
     "step": "screenshot options-list.jpg"
-  },
-  {
-    "step": "screenshot options-list-dark.jpg"
   },
   {
     "step": "options list + per-row Test",
