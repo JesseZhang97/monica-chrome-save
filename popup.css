@@ -14,11 +14,12 @@ body {
   align-items: center;
   gap: var(--space-2);
   margin: 0 calc(var(--space-2) * -1) var(--space-3) 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--line);
 }
 
 .logo {
   flex: none;
-  border-radius: 6px;
 }
 
 h1 {
@@ -26,6 +27,8 @@ h1 {
   margin: 0;
   font-size: 15px;
   font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--navy);
 }
 
 /* ---- target ------------------------------------------------------------- */
@@ -60,6 +63,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface);
+  box-shadow: var(--shadow);
   font-size: 13px;
   color: var(--muted);
   cursor: pointer;
@@ -111,7 +115,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-card);
 }
 
 .picker-option {
@@ -129,12 +133,19 @@ h1 {
 
 /* ---- compose ------------------------------------------------------------ */
 
+/* Ruled letter paper: one sky rule under every 20px text line. */
 textarea {
   display: block;
   min-height: 132px;
   max-height: 300px;
   resize: none;
-  font: 13px/1.55 var(--font-mono);
+  font: 13px/20px var(--font-mono);
+  background-color: var(--paper);
+  background-image: linear-gradient(transparent 19px, var(--rule) 19px);
+  background-size: 100% 20px;
+  background-position: 0 var(--space-2);
+  background-attachment: local;
+  box-shadow: var(--shadow);
 }
 
 textarea[readonly] {
@@ -148,6 +159,7 @@ textarea[readonly] {
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .result {
@@ -202,6 +214,7 @@ textarea[readonly] {
 .result-name {
   font-weight: 650;
   white-space: nowrap;
+  color: var(--navy);
 }
 
 .result-text {
@@ -256,7 +269,7 @@ textarea[readonly] {
 
 .send[data-state="done"] {
   background: var(--ok);
-  color: var(--brand-ink);
+  color: #ffffff;
   opacity: 1;
 }
 
@@ -289,7 +302,7 @@ textarea[readonly] {
 .notice {
   margin-bottom: var(--space-3);
   padding: var(--space-3);
-  border: 1px solid var(--line);
+  border: 1px solid var(--warn-line);
   border-left: 3px solid var(--warn);
   border-radius: var(--radius-sm);
   background: var(--warn-soft);
@@ -339,13 +352,10 @@ textarea[readonly] {
   text-align: center;
 }
 
-.setup img {
-  border-radius: 12px;
-}
-
 .setup-title {
-  margin: var(--space-2) 0 var(--space-1);
+  margin: var(--space-3) 0 var(--space-1);
   font-weight: 700;
+  color: var(--navy);
 }
 
 .setup-text {
