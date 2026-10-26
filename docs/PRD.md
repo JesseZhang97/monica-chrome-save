@@ -1,4 +1,4 @@
-# PRD — Monica Chrome Save (MV3)
+# PRD — Save To Monica (MV3)
 
 ## Goal
 Desktop Chrome (macOS + Windows) capture client that posts into the **same Monica webhook** as the iOS Shortcut「Save to Feishu」/ routine「内容入库」. One protocol, multiple triggers.

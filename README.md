@@ -1,4 +1,4 @@
-# Monica Chrome Save
+# Save To Monica
 
 Chrome Manifest V3 extension that saves the current tab (title + URL, optional notes/selection) to **the same Monica ingest webhook** as the iOS Shortcut. Since 2.0 you can configure several named webhooks and pick the target per save.
 
@@ -34,7 +34,7 @@ Chrome steps are the same on both operating systems; only the folder picker look
    - **Mac:** Finder dialog — navigate to the clone, select the folder, Open.
    - **Windows:** Explorer dialog — navigate to the clone, select the folder, Select Folder.
 
-The toolbar gets the Monica Chrome Save icon (red mailbox on a light sky tile, a white letter going into the navy slot). Pin it from the puzzle-piece menu if it is hidden.
+The toolbar gets the Save To Monica icon (red mailbox on a light sky tile, a white letter going into the navy slot). Pin it from the puzzle-piece menu if it is hidden.
 
 Reload the extension on `chrome://extensions` after you pull updates.
 

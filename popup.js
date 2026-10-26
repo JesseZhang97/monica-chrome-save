@@ -245,7 +245,7 @@ async function authorize(id, origin) {
   try {
     granted = await chrome.permissions.request({ origins: [origin] });
   } catch (error) {
-    console.warn("Monica Chrome Save: permission request failed", error);
+    console.warn("Save To Monica: permission request failed", error);
   }
   if (granted) await runSend([id]);
   else setStatus(statusEl, "未获得授权,Chrome 会拦截发往该域名的请求", "warn");
@@ -299,7 +299,7 @@ async function retryLastFailure() {
     try {
       await chrome.permissions.request({ origins });
     } catch (error) {
-      console.warn("Monica Chrome Save: permission request failed", error);
+      console.warn("Save To Monica: permission request failed", error);
     }
   }
   if (ids.length === 0) {

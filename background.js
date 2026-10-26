@@ -5,7 +5,7 @@ import { isStateChange, loadState } from "./lib/store.js";
 chrome.runtime.onInstalled.addListener(() => {
   // Upgrade v1 settings first so the menu is built from the migrated list.
   loadState()
-    .catch((error) => console.error("Monica Chrome Save: settings migration failed", error))
+    .catch((error) => console.error("Save To Monica: settings migration failed", error))
     .then(rebuildMenus);
 });
 
@@ -19,12 +19,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   deliver(String(message.webhookId ?? ""), message.content)
     .then(sendResponse)
     .catch((error) => {
-      console.error("Monica Chrome Save: send failed", error);
+      console.error("Save To Monica: send failed", error);
       sendResponse({ ok: false, kind: "error", status: 0, message: "Save failed" });
     });
   return true;
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  saveFromMenu(info, tab).catch((error) => console.error("Monica Chrome Save: context-menu save failed", error));
+  saveFromMenu(info, tab).catch((error) => console.error("Save To Monica: context-menu save failed", error));
 });

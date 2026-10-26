@@ -98,7 +98,7 @@ async function requestOrigin(url) {
   try {
     return await chrome.permissions.request({ origins: [origin] });
   } catch (error) {
-    console.warn("Monica Chrome Save: permission request failed", error);
+    console.warn("Save To Monica: permission request failed", error);
     return false;
   }
 }
@@ -109,7 +109,7 @@ async function revokeUnused(before, after) {
     try {
       await chrome.permissions.remove({ origins: [origin] });
     } catch (error) {
-      console.warn(`Monica Chrome Save: could not release ${origin}`, error);
+      console.warn(`Save To Monica: could not release ${origin}`, error);
     }
   }
 }
@@ -218,7 +218,7 @@ async function testWebhook(hook, button) {
   const result = await postToMonica({
     webhookUrl: hook.url,
     webhookKey: hook.key,
-    content: buildContent({ title: "Monica Chrome Save · 连接测试", url: "https://example.com/", selection: "" }),
+    content: buildContent({ title: "Save To Monica · 连接测试", url: "https://example.com/", selection: "" }),
   });
   // Status code only: never the key or the response body.
   rowStatus.set(

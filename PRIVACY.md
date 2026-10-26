@@ -1,9 +1,9 @@
-# Monica Chrome Save Privacy Policy
+# Save To Monica Privacy Policy
 
 Effective date: October 17, 2026
 Last updated: October 26, 2026 (version 2.0.0)
 
-Monica Chrome Save is a Chrome extension that sends the current tab's title, URL, optional selected text and notes to one or more webhooks that the user configures (for example, a personal Monica ingest endpoint).
+Save To Monica is a Chrome extension that sends the current tab's title, URL, optional selected text and notes to one or more webhooks that the user configures (for example, a personal Monica ingest endpoint).
 
 ## Data the extension uses
 
