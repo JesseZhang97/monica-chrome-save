@@ -1,5 +1,6 @@
 import { buildContent, isConfigured, parseWebhookUrl, postToMonica } from "./lib/protocol.js";
 import { getConfig } from "./lib/config.js";
+import { loadState } from "./lib/store.js";
 
 const MENU_ID = "save-to-monica";
 const BADGE_CLEAR_MS = 3200;
@@ -178,6 +179,8 @@ async function createMenus() {
 
 chrome.runtime.onInstalled.addListener(() => {
   createMenus();
+  // Upgrade v1 settings right away instead of waiting for the first save.
+  loadState().catch((error) => console.error("Monica Chrome Save: settings migration failed", error));
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
