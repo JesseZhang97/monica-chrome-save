@@ -1,38 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Save to Monica</title>
+    <title>保存到 Monica</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <form id="form">
-      <header>
-        <p class="eyebrow">Monica Chrome Save</p>
-        <h1>Compose</h1>
+    <main class="popup">
+      <header class="bar">
+        <h1>保存到 Monica</h1>
+        <button type="button" id="settings" class="icon-btn" aria-label="打开设置" title="设置">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.5h-4l-.4 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6ZM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z" transform="translate(-1 0)"/>
+          </svg>
+        </button>
       </header>
 
-      <label>
-        <span>Content</span>
-        <textarea
-          id="content"
-          name="content"
-          rows="9"
-          spellcheck="true"
-          placeholder="标题: …&#10;链接: …"
-        ></textarea>
-      </label>
+      <section id="setup" class="setup" hidden>
+        <p class="setup-title">还没有 webhook</p>
+        <p class="setup-text">先在设置里添加 Monica 的 webhook 地址和 Bearer key。</p>
+        <button type="button" id="setup-open">去添加</button>
+      </section>
 
-      <p class="hint">Prefills the current tab. Edit or add notes, then Send.</p>
+      <section id="recover" class="notice" aria-labelledby="recover-title" hidden>
+        <p id="recover-title" class="notice-title">上次发送失败</p>
+        <p id="recover-text" class="notice-text"></p>
+        <p id="recover-snippet" class="notice-snippet"></p>
+        <div class="notice-actions">
+          <button type="button" id="recover-retry" class="small">重发</button>
+          <button type="button" id="recover-discard" class="secondary small">丢弃</button>
+        </div>
+        <p id="recover-status" class="notice-status" role="status" aria-live="polite"></p>
+      </section>
 
-      <div class="actions">
-        <button type="submit" id="send">Send</button>
-        <button type="button" id="options" class="secondary">Options</button>
-      </div>
+      <form id="form" hidden>
+        <div class="target">
+          <p id="target-single" class="target-single" hidden>发送到 <strong id="target-name"></strong></p>
+          <details id="picker" class="picker" hidden>
+            <summary>
+              <span class="picker-prefix">发送到</span>
+              <strong id="picker-label"></strong>
+              <span class="picker-caret" aria-hidden="true"></span>
+            </summary>
+            <fieldset id="picker-list" class="picker-list">
+              <legend class="sr-only">选择目标 webhook(可多选)</legend>
+            </fieldset>
+          </details>
+        </div>
 
-      <p id="status" class="status" role="status" aria-live="polite"></p>
-    </form>
+        <label for="content" class="sr-only">内容</label>
+        <textarea id="content" name="content" rows="6" spellcheck="true" placeholder="标题: …&#10;链接: …&#10;&#10;备注…"></textarea>
+
+        <ul id="results" class="results" aria-label="发送结果" hidden></ul>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+
+        <div class="footer">
+          <span class="hint"><kbd id="shortcut">Ctrl Enter</kbd> 发送</span>
+          <button type="submit" id="send" class="send">
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="send-label">发送</span>
+          </button>
+        </div>
+      </form>
+    </main>
     <script type="module" src="popup.js"></script>
   </body>
 </html>

@@ -15,48 +15,125 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;
-  width: 360px;
+  width: 380px;
 }
 
 body {
-  font: 14px/1.45 "Segoe UI", system-ui, sans-serif;
+  font: 14px/1.45 system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
   color: var(--ink);
   background: var(--paper);
 }
 
-form {
-  padding: 0.9rem 1rem 0.85rem;
+.popup {
+  padding: 0.75rem 0.9rem 0.85rem;
 }
 
-.eyebrow {
-  margin: 0 0 0.2rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 0.68rem;
-  font-weight: 650;
-  color: var(--teal);
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
 }
 
 h1 {
-  margin: 0 0 0.7rem;
-  font-size: 1.15rem;
-  letter-spacing: -0.02em;
+  margin: 0;
+  font-size: 1rem;
 }
 
-label span {
-  display: block;
-  margin-bottom: 0.3rem;
-  font-size: 0.78rem;
-  font-weight: 650;
+.icon-btn {
+  background: transparent;
+  color: var(--muted);
+  padding: 0.3rem;
+  border-radius: 8px;
+  line-height: 0;
+}
+
+.target-single,
+.picker summary {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.picker {
+  position: relative;
+}
+
+.picker summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  list-style: none;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.picker summary::-webkit-details-marker {
+  display: none;
+}
+
+.picker-caret::before {
+  content: "▾";
+}
+
+.picker strong,
+.target-single strong {
+  color: var(--ink);
+}
+
+.picker-list {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 2rem;
+  min-width: 14rem;
+  margin: 0;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  box-shadow: 0 8px 24px rgba(18, 38, 44, 0.16);
+}
+
+.picker-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pill {
+  font-size: 0.7rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--teal);
+  color: var(--teal-ink);
 }
 
 textarea {
   width: 100%;
-  min-height: 9.5rem;
-  resize: vertical;
+  min-height: 8rem;
+  resize: none;
   padding: 0.55rem 0.65rem;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -65,27 +142,102 @@ textarea {
   font: 13px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-textarea:focus {
+textarea:focus-visible {
   outline: 2px solid var(--teal);
   outline-offset: 1px;
 }
 
+.results {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+}
+
+.result {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 0.85rem;
+}
+
+.result::before {
+  width: 1rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.result[data-state="ok"]::before {
+  content: "✓";
+  color: var(--ok);
+}
+
+.result[data-state="err"]::before {
+  content: "✕";
+  color: var(--err);
+}
+
+.result[data-state="warn"]::before {
+  content: "!";
+  color: var(--warn);
+}
+
+.result[data-state="sending"]::before,
+.result[data-state="pending"]::before {
+  content: "…";
+  color: var(--muted);
+}
+
+.result-name {
+  font-weight: 650;
+}
+
+.result-text {
+  color: var(--muted);
+}
+
+.status {
+  min-height: 1.3em;
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+[data-kind="ok"] {
+  color: var(--ok);
+}
+
+[data-kind="err"] {
+  color: var(--err);
+}
+
+[data-kind="warn"] {
+  color: var(--warn);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
 .hint {
-  margin: 0.4rem 0 0.7rem;
   color: var(--muted);
   font-size: 0.78rem;
 }
 
-.actions {
-  display: flex;
-  gap: 0.5rem;
+kbd {
+  font: inherit;
+  padding: 0 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
 }
 
 button {
   appearance: none;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 8px;
-  padding: 0.48rem 0.9rem;
+  padding: 0.45rem 0.9rem;
   font: inherit;
   font-weight: 650;
   cursor: pointer;
@@ -93,10 +245,24 @@ button {
   color: var(--teal-ink);
 }
 
+button.small {
+  padding: 0.25rem 0.65rem;
+  font-size: 0.82rem;
+}
+
 button.secondary {
   background: transparent;
   color: var(--ink);
-  border: 1px solid var(--line);
+  border-color: var(--line);
+}
+
+button.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-decoration: underline;
+  font-weight: 650;
 }
 
 button:disabled {
@@ -104,26 +270,93 @@ button:disabled {
   cursor: default;
 }
 
-button:focus-visible {
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible {
   outline: 2px solid var(--teal);
   outline-offset: 2px;
 }
 
-.status {
-  min-height: 1.35em;
-  margin: 0.7rem 0 0;
-  font-size: 0.85rem;
-  font-weight: 650;
+.send {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.status[data-kind="ok"] {
-  color: var(--ok);
+.spinner {
+  display: none;
+  width: 0.9em;
+  height: 0.9em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.status[data-kind="err"] {
-  color: var(--err);
+.send[aria-busy="true"] .spinner {
+  display: inline-block;
 }
 
-.status[data-kind="warn"] {
+.send[aria-busy="true"]:disabled {
+  opacity: 0.85;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.notice {
+  margin-bottom: 0.65rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--warn);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.notice-title {
+  margin: 0;
+  font-weight: 700;
   color: var(--warn);
+}
+
+.notice-text,
+.notice-snippet,
+.notice-status {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.notice-snippet {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notice-status:empty {
+  display: none;
+}
+
+.notice-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+}
+
+.setup {
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
+
+.setup-title {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+}
+
+.setup-text {
+  margin: 0 0 0.75rem;
+  color: var(--muted);
 }

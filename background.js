@@ -1,6 +1,8 @@
-import { buildContent, isConfigured, parseWebhookUrl, postToMonica } from "./lib/protocol.js";
-import { getConfig } from "./lib/config.js";
+import { buildContent } from "./lib/protocol.js";
+import { deliver } from "./lib/deliver.js";
+import { describeResult, headline } from "./lib/feedback.js";
 import { loadState } from "./lib/store.js";
+import { resolveDefault } from "./lib/webhooks.js";
 
 const MENU_ID = "save-to-monica";
 const BADGE_CLEAR_MS = 3200;
@@ -11,7 +13,7 @@ function setBadge(kind, text) {
   const colors = {
     ok: "#0F766E",
     err: "#B91C1C",
-    cfg: "#B45309",
+    warn: "#B45309",
   };
   chrome.action.setBadgeBackgroundColor({ color: colors[kind] || colors.err });
   chrome.action.setBadgeTextColor?.({ color: "#FFFFFF" });
@@ -35,7 +37,7 @@ function showToast(tabId, message, kind) {
         el.id = id;
         el.setAttribute("role", "status");
         el.textContent = msg;
-        const bg = tone === "ok" ? "#0F766E" : tone === "cfg" ? "#B45309" : "#B91C1C";
+        const bg = tone === "ok" ? "#0F766E" : tone === "warn" ? "#B45309" : "#B91C1C";
         el.style.cssText = [
           "position:fixed",
           "z-index:2147483647",
@@ -60,31 +62,10 @@ function showToast(tabId, message, kind) {
     });
 }
 
-function notify(tabId, result) {
-  let kind = "err";
-  let badge = "ERR";
-  let toast = result.message;
-
-  if (result.ok) {
-    kind = "ok";
-    badge = "OK";
-    toast = "Saved to Monica";
-  } else if (result.kind === "config" || result.kind === "permission") {
-    kind = "cfg";
-    badge = result.kind === "permission" ? "PERM" : "CFG";
-  } else if (result.kind === "http" && result.status) {
-    badge = String(result.status);
-    toast = `HTTP ${result.status}`;
-  }
-
-  setBadge(kind, badge);
-  showToast(tabId, toast, kind);
-}
-
-async function hasOriginPermission(webhookUrl) {
-  const parsed = parseWebhookUrl(webhookUrl);
-  if (!parsed.ok) return false;
-  return chrome.permissions.contains({ origins: [parsed.originPattern] });
+function notify(tabId, result, name) {
+  const view = describeResult(result);
+  setBadge(view.tone, view.badge);
+  showToast(tabId, headline(result, name), view.tone);
 }
 
 async function getSelectionText(tabId) {
@@ -100,72 +81,21 @@ async function getSelectionText(tabId) {
   }
 }
 
-async function sendContent(tab, content) {
-  const config = await getConfig();
-  if (!isConfigured(config)) {
-    const result = {
-      ok: false,
-      kind: "config",
-      status: 0,
-      message: "Missing config — set webhook URL and Bearer key in Options",
-    };
-    notify(tab?.id, result);
+async function saveFromMenu(tab, { url, title, selection }) {
+  const hook = resolveDefault(await loadState());
+  if (!hook) {
+    notify(tab?.id, { ok: false, kind: "config", status: 0 }, "Monica");
     chrome.runtime.openOptionsPage().catch(() => {});
-    return result;
-  }
-
-  const allowed = await hasOriginPermission(config.webhookUrl);
-  if (!allowed) {
-    const result = {
-      ok: false,
-      kind: "permission",
-      status: 0,
-      message: "Host permission missing — open Options, save, and allow access",
-    };
-    notify(tab?.id, result);
-    chrome.runtime.openOptionsPage().catch(() => {});
-    return result;
-  }
-
-  const body = String(content ?? "").trim();
-  if (!body) {
-    const result = {
-      ok: false,
-      kind: "config",
-      status: 0,
-      message: "Content is empty",
-    };
-    notify(tab?.id, result);
-    return result;
-  }
-
-  const result = await postToMonica({
-    webhookUrl: config.webhookUrl,
-    webhookKey: config.webhookKey,
-    content: body,
-  });
-  notify(tab?.id, result);
-  return result;
-}
-
-async function savePayload(tab, { url, title, selection }) {
-  const href = String(url || "").trim();
-  if (!href) {
-    notify(tab?.id, {
-      ok: false,
-      kind: "config",
-      status: 0,
-      message: "Cannot read this tab URL (restricted page)",
-    });
     return;
   }
-
-  const content = buildContent({
-    title: title || tab?.title || "",
-    url: href,
-    selection: selection || "",
-  });
-  await sendContent(tab, content);
+  const href = String(url || "").trim();
+  if (!href) {
+    notify(tab?.id, { ok: false, kind: "unreadable", status: 0 }, hook.name);
+    return;
+  }
+  const content = buildContent({ title: title || tab?.title || "", url: href, selection: selection || "" });
+  const result = await deliver(hook.id, content);
+  notify(tab?.id, result, hook.name);
 }
 
 async function createMenus() {
@@ -185,19 +115,13 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (sender.id !== chrome.runtime.id) return;
-  if (message?.type !== "save-content") return;
-  (async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const result = await sendContent(tab, message.content);
-    sendResponse(result);
-  })().catch(() => {
-    sendResponse({
-      ok: false,
-      kind: "error",
-      status: 0,
-      message: "Save failed",
+  if (message?.type !== "send") return;
+  deliver(String(message.webhookId ?? ""), message.content)
+    .then(sendResponse)
+    .catch((error) => {
+      console.error("Monica Chrome Save: send failed", error);
+      sendResponse({ ok: false, kind: "error", status: 0, message: "Save failed" });
     });
-  });
   return true;
 });
 
@@ -210,7 +134,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (!selection && !linkUrl) {
     selection = await getSelectionText(tab?.id);
   }
-  await savePayload(tab, {
+  await saveFromMenu(tab, {
     url,
     title: tab?.title || "",
     selection,

@@ -6,6 +6,7 @@ import {
   migrateStorage,
   normalizeState,
   originsToRevoke,
+  resolveTargets,
   removeWebhook,
   resolveDefault,
   setDefaultWebhook,
@@ -170,4 +171,17 @@ test("saveState round-trips through loadState", async () => {
   const state = stateWith({ name: "A", url: "https://a.example/", key: "k" });
   await saveState(state, storage);
   assert.deepEqual(await loadState(storage), state);
+});
+
+test("resolveTargets keeps remembered ids that still exist, else falls back to the default", () => {
+  const state = stateWith(
+    { name: "A", url: "https://a.example/", key: "k" },
+    { name: "B", url: "https://b.example/", key: "k" },
+    { name: "C", url: "https://c.example/", key: "k" }
+  );
+  assert.deepEqual(resolveTargets(state, ["id3", "gone", "id2"]), ["id3", "id2"]);
+  assert.deepEqual(resolveTargets(state, ["gone"]), ["id1"]);
+  assert.deepEqual(resolveTargets(state, undefined), ["id1"]);
+  assert.deepEqual(resolveTargets(state, ["id2", "id2"]), ["id2"]);
+  assert.deepEqual(resolveTargets({ webhooks: [], defaultWebhookId: "" }, ["id1"]), []);
 });
