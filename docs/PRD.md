@@ -43,6 +43,31 @@ If selection empty, still send title+url.
 11. Batch save open tabs.
 12. Sync settings via chrome.storage.sync.
 
+## Product — v2.0 (multiple webhooks + feedback)
+Decided with Jesse on 2026-10-26. Protocol, request body and Bearer header are unchanged; no new permissions.
+
+### Webhooks
+- Storage (`chrome.storage.local`): `webhooks: [{ id, name, url, key, createdAt }]` + `defaultWebhookId`.
+- Name required and unique (case-insensitive, whitespace-normalized); URL http(s); key required.
+- Options page is a list: add, edit (blank key keeps the stored key), delete with confirmation, set default, per-row Test (HTTP status only). Empty state guides the first add.
+- Host permission requested per webhook origin on save/test; released on delete/re-point when no other webhook uses that origin.
+- Upgrade: v1 `webhookUrl` / `webhookKey` migrate into a default webhook named "Monica" (fixed id, idempotent), legacy keys removed.
+
+### Popup
+- Target picker at the top: default preselected, last selection remembered; multiple targets allowed, sent one by one with a result row each.
+- States: sending (spinner, disabled, no double submit) → success (✓ "已保存到「名称」", auto-close after 0.9 s) → failure (plain-language reason + HTTP code, content kept, Retry for failed targets only).
+- Reasons: 401/403 密钥或地址不对; 404 地址不存在; 429 请求过多,稍后再试; 5xx Monica 服务端错误; timeout / network 无法连接; missing origin grant "未授权访问该域名,点此授权" (requests the origin, then retries). Never the key or response body.
+- Requests time out after 15 s (`AbortController`).
+- Cmd/Ctrl+Enter sends. Keyboard operable, visible focus, light/dark via `prefers-color-scheme`. UI copy is Chinese.
+
+### Context menu
+- One webhook: "Save to Monica". Several: "Save to ▸ {名称}" (default marked). No "Save to all". Rebuilt whenever the list changes.
+- Feedback: badge (OK / status code / ERR / PERM / CFG) + toolbar tooltip (`chrome.action.setTitle`) + in-page toast where scripting is allowed. On `chrome://` / Web Store pages only badge + tooltip (no `notifications` permission).
+- A failed save is kept as the single "last failure" (content, webhook id, time, error kind/status; no key, no response body). The failure badge stays until the popup opens, which offers resend or discard. No send history.
+
+### Brand
+- Logo: teal tile + white bookmark ribbon + amber four-point spark; `icons/logo.svg` is the source, PNGs and a 1024 px master are rendered by `scripts/generate-icons.py`.
+
 ## Acceptance criteria
 - [ ] MV3 extension loads unpacked in Chrome without errors.
 - [ ] With valid URL+key, one click saves active tab; Monica routine receives `{content}` and can process (manual e2e with Jesse's webhook).
@@ -50,6 +75,9 @@ If selection empty, still send title+url.
 - [ ] No secrets in repository.
 - [ ] README covers Mac + Windows install (same steps).
 - [ ] Minimal permissions: prefer `activeTab`, `storage`, `contextMenus`; host permission only for the configured webhook origin if required (document approach).
+- [ ] v2: two named webhooks can be saved to separately from the popup and the context menu; mixed multi-target results show per target.
+- [ ] v2: 200 / 401 / 500 / timeout / network failure each show the mapped feedback in popup and context menu (`node tests/e2e/screenshots.mjs`, local mock server only).
+- [ ] v2: a v1 profile keeps working after the update (migrated to "Monica").
 
 ## Tech constraints
 - Manifest V3 service worker; no persistent background page.
