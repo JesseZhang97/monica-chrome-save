@@ -1,19 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
   <title>Monica Chrome Save</title>
   <!--
-    Bookmark ribbon (saved item) + four-point spark (signal sent to the
-    Monica agent). Straight edges sit on multiples of 8 units so the 16, 32
-    and 48 px renders land on whole pixels. Colors match the UI tokens:
-    brand teal #0F766E -> #0B5550, accent amber #FBBF24.
+    Red mailbox on a light sky tile, with a white letter going into the navy
+    slot: the page is posted to the Monica agent. Straight edges sit on
+    multiples of 8 units so the 16, 32 and 48 px renders land on whole
+    pixels. Colors match the styles/ui.css tokens: brand red #D23A2D,
+    navy #1F3A5F, sky #DCEBF8.
   -->
-  <defs>
-    <linearGradient id="tile" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="128" y2="128">
-      <stop offset="0" stop-color="#14857B"/>
-      <stop offset="1" stop-color="#0B5550"/>
-    </linearGradient>
-  </defs>
-  <rect width="128" height="128" rx="28" fill="url(#tile)"/>
-  <path d="M24 32a8 8 0 0 1 8-8h40a8 8 0 0 1 8 8v72l-28-20-28 20z" fill="#FFFFFF"/>
-  <path d="M98 6Q105 23 122 30Q105 37 98 54Q91 37 74 30Q91 23 98 6z" fill="url(#tile)" stroke="url(#tile)" stroke-width="10" stroke-linejoin="round"/>
-  <path d="M98 6Q105 23 122 30Q105 37 98 54Q91 37 74 30Q91 23 98 6z" fill="#FBBF24"/>
+  <rect width="128" height="128" rx="24" fill="#DCEBF8"/>
+  <path d="M24 56a40 40 0 0 1 80 0v48H24z" fill="#D23A2D"/>
+  <rect x="48" y="32" width="32" height="36" rx="2" fill="#FFFFFF"/>
+  <path d="M50 35l14 11 14-11" fill="none" stroke="#1F3A5F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="40" y="64" width="48" height="8" rx="2" fill="#1F3A5F"/>
+  <rect x="16" y="104" width="96" height="8" rx="2" fill="#1F3A5F"/>
 </svg>

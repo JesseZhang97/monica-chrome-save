@@ -1,9 +1,10 @@
 /*
  * Shared design tokens and base controls for popup.html and options.html.
- * Brand colors come from icons/logo.svg (teal tile, amber spark).
+ * Light only: bright paper on a pale sky ground, mailbox red as the accent,
+ * navy ink and fine sky rules. Brand colors come from icons/logo.svg.
  */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   --font-sans: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -15,60 +16,46 @@
   --space-5: 20px;
   --space-6: 24px;
 
-  --radius-sm: 6px;
-  --radius: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 3px;
+  --radius: 4px;
+  --radius-lg: 6px;
 
-  --bg: #f3f6f5;
+  --bg: #f2f7fc;
   --surface: #ffffff;
-  --surface-2: #eaf0ef;
-  --line: #d3dcda;
-  --ink: #132120;
-  --muted: #586967;
+  --surface-2: #eef4fb;
+  --paper: #fffcf6;
+  --rule: #e3edf7;
+  --line: #c4d4e6;
+  --ink: #1b2638;
+  --muted: #56667c;
 
-  --brand: #0f766e;
-  --brand-hover: #0b5e58;
+  --brand: #d23a2d;
+  --brand-hover: #b02f23;
   --brand-ink: #ffffff;
-  --brand-soft: #dff1ee;
-  --accent: #fbbf24;
+  --brand-soft: #fdecea;
+  --navy: #1f3a5f;
+  --sky: #dcebf8;
 
-  --ok: #15803d;
-  --ok-soft: #e3f6e8;
-  --err: #b91c1c;
-  --err-soft: #fde8e8;
-  --warn: #a16207;
-  --warn-soft: #fdf3d7;
+  --ok: #1f4e8c;
+  --ok-soft: #e6eef9;
+  --err: #b8281c;
+  --err-soft: #fdecea;
+  --warn: #a64b06;
+  --warn-soft: #fff4e5;
 
-  --focus: #0f766e;
-  --shadow: 0 1px 2px rgba(10, 30, 28, 0.06), 0 8px 24px rgba(10, 30, 28, 0.08);
-  --backdrop: rgba(10, 24, 23, 0.45);
-}
+  --focus: #2f6db5;
+  --shadow: 0 1px 2px rgba(31, 58, 95, 0.08);
+  --shadow-card: 3px 3px 0 var(--sky);
+  --backdrop: rgba(27, 38, 56, 0.35);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d1413;
-    --surface: #152020;
-    --surface-2: #1c2a29;
-    --line: #2c3d3b;
-    --ink: #e2ecea;
-    --muted: #94a7a4;
-
-    --brand: #2dd4bf;
-    --brand-hover: #5eead4;
-    --brand-ink: #04211e;
-    --brand-soft: #123a36;
-
-    --ok: #4ade80;
-    --ok-soft: #12301f;
-    --err: #f87171;
-    --err-soft: #3a1818;
-    --warn: #fbbf24;
-    --warn-soft: #362a0d;
-
-    --focus: #5eead4;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
-    --backdrop: rgba(0, 0, 0, 0.6);
-  }
+  /* Airmail edge: red and navy bars on white, used as a thin top band. */
+  --airmail: repeating-linear-gradient(
+    -45deg,
+    var(--brand) 0 8px,
+    #ffffff 8px 12px,
+    var(--navy) 12px 20px,
+    #ffffff 20px 24px
+  );
 }
 
 * {
@@ -123,6 +110,7 @@ button {
   cursor: pointer;
   background: var(--brand);
   color: var(--brand-ink);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.14);
   transition: background-color 0.12s, border-color 0.12s, color 0.12s;
 }
 
@@ -138,8 +126,9 @@ button.small {
 
 button.secondary {
   background: var(--surface);
-  color: var(--ink);
+  color: var(--navy);
   border-color: var(--line);
+  box-shadow: none;
 }
 
 button.secondary:hover:not(:disabled) {
@@ -157,9 +146,10 @@ button.danger:hover:not(:disabled) {
 }
 
 button.ghost-danger {
-  background: transparent;
+  background: var(--surface);
   color: var(--err);
   border-color: var(--line);
+  box-shadow: none;
 }
 
 button.ghost-danger:hover:not(:disabled) {
@@ -172,6 +162,7 @@ button.icon {
   padding: 0;
   background: transparent;
   color: var(--muted);
+  box-shadow: none;
 }
 
 button.icon:hover:not(:disabled) {
@@ -185,6 +176,7 @@ button.link {
   padding: 0;
   border: 0;
   background: none;
+  box-shadow: none;
   color: inherit;
   font-weight: 600;
   text-decoration: underline;
@@ -229,7 +221,7 @@ input[type="checkbox"] {
   width: 16px;
   height: 16px;
   margin: 0;
-  accent-color: var(--brand);
+  accent-color: var(--navy);
 }
 
 /* One focus treatment everywhere: visible on light and dark surfaces. */
@@ -248,7 +240,7 @@ kbd {
   padding: 0 5px;
   border: 1px solid var(--line);
   border-bottom-width: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   font-size: 11px;
   line-height: 16px;
@@ -257,15 +249,17 @@ kbd {
 
 /* ---- small pieces ------------------------------------------------------ */
 
+/* Rubber-stamp tag: outlined in red, no fill. */
 .pill {
   display: inline-block;
-  padding: 0 var(--space-2);
-  border-radius: 999px;
-  background: var(--brand-soft);
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
   color: var(--brand);
   font-size: 11px;
   font-weight: 700;
-  line-height: 18px;
+  letter-spacing: 0.08em;
+  line-height: 16px;
 }
 
 [data-kind="ok"] {
