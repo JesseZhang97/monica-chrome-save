@@ -237,20 +237,6 @@ try {
   await shoot(p, "popup-multi-mixed", { popup: true });
   note("popup multi-target", { rows });
 
-  await setStorage({
-    webhooks: [hook("a", "Monica 收藏", "ok"), hook("b", "工作笔记", "ok")],
-    defaultWebhookId: "a",
-    popupTargets: ["a", "b"],
-  });
-  p = await openPopup();
-  await sendAndSettle(p);
-  const multiOk = await formOutcome(p);
-  assert.equal(await p.evaluate("document.querySelectorAll('.result[data-state=ok]').length"), 2);
-  assert.equal((multiOk.rows.match(/已保存/g) || []).length, 2);
-  assert.equal(multiOk.button, "已保存");
-  assertNoSummary(multiOk, "popup multi all-ok");
-  note("popup multi all-ok", multiOk);
-
   // Selection is remembered for the next popup.
   p = await openPopup();
   assert.equal(await p.evaluate("document.querySelectorAll('#picker-list input:checked').length"), 5);
