@@ -55,7 +55,7 @@ Decided with Jesse on 2026-10-26. Protocol, request body and Bearer header are u
 
 ### Popup
 - Target picker at the top: default preselected, last selection remembered; multiple targets allowed, sent one by one with a result row each.
-- States: sending (spinner, disabled, no double submit) → success (✓ "已保存到「名称」", auto-close after 0.9 s) → failure (plain-language reason + HTTP code, content kept, Retry for failed targets only).
+- States: sending (spinner, disabled, no double submit) → success (per-target row ✓ "{名称} 已保存", button "已保存", auto-close after 0.9 s) → failure (plain-language reason + HTTP code on the result row, content kept, Retry for failed targets only).
 - Reasons: 401/403 密钥或地址不对; 404 地址不存在; 429 请求过多,稍后再试; 5xx Monica 服务端错误; timeout / network 无法连接; missing origin grant "未授权访问该域名,点此授权" (requests the origin, then retries). Never the key or response body.
 - Requests time out after 15 s (`AbortController`).
 - Cmd/Ctrl+Enter sends. Keyboard operable, visible focus. UI copy is Chinese.

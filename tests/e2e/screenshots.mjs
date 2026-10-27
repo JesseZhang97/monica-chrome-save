@@ -126,6 +126,14 @@ try {
     await waitFor(p, "['done','failed'].includes(document.getElementById('send').dataset.state)", 20000);
   }
 
+  async function formOutcome(p) {
+    return p.evaluate("({ rows: document.querySelector('.results').innerText, status: document.getElementById('status').innerText, button: document.getElementById('send-label').textContent })");
+  }
+
+  function assertNoSummary(snap, label) {
+    assert.equal(snap.status, "", `${label} still has a summary line: ${JSON.stringify(snap)}`);
+  }
+
   // ---- popup: no webhook yet ------------------------------------------------
   await setStorage({});
   let p = await openPopup();
@@ -134,7 +142,7 @@ try {
 
   // ---- popup: single target, success / 401 / 500 / network / timeout ----------
   for (const [scenario, expectText] of [
-    ["ok", "已保存到「Monica 收藏」"],
+    ["ok", "已保存"],
     ["401", "密钥或地址不对(HTTP 401)"],
     ["500", "Monica 服务端错误(HTTP 500)"],
     ["drop", "无法连接"],
@@ -143,14 +151,17 @@ try {
     p = await openPopup();
     assert.match(await p.evaluate("document.getElementById('content').value"), /^标题: 示例文章:如何整理网页收藏\n链接: http:\/\/127\.0\.0\.1:\d+\/page$/);
     await sendAndSettle(p);
-    const text = await p.evaluate("document.querySelector('.results').innerText + '\\n' + document.getElementById('status').innerText");
-    assert.ok(text.includes(expectText), `${scenario}: ${text}`);
-    if (scenario !== "ok") {
-      assert.equal(await p.evaluate("document.getElementById('send-label').textContent"), "重试");
+    const snap = await formOutcome(p);
+    assert.ok(snap.rows.includes(expectText), `${scenario}: ${snap.rows}`);
+    assertNoSummary(snap, `popup ${scenario}`);
+    if (scenario === "ok") {
+      assert.equal(snap.button, "已保存");
+    } else {
+      assert.equal(snap.button, "重试");
       assert.ok((await p.evaluate("document.getElementById('content').value")).startsWith("标题:"), "content kept");
     }
     await shoot(p, scenario === "ok" ? "popup-success" : scenario === "drop" ? "popup-network" : `popup-${scenario}`, { popup: true });
-    note(`popup ${scenario}`, { text: text.replace(/\s+/g, " ").trim() });
+    note(`popup ${scenario}`, { text: `${snap.rows} | ${snap.button}`.replace(/\s+/g, " ").trim() });
   }
 
   // Timeout: capture the loading state, then the 15 s timeout failure.
@@ -160,12 +171,14 @@ try {
   await sleep(400);
   assert.equal(await p.evaluate("document.getElementById('send').getAttribute('aria-busy')"), "true");
   assert.equal(await p.evaluate("document.getElementById('send').disabled"), true);
-  await p.evaluate("document.getElementById('send').click()"); // ignored while sending
+  assert.equal(await p.evaluate("document.getElementById('status').innerText"), "");
+  await p.evaluate("document.getElementById('send').click()");
   await shoot(p, "popup-sending", { popup: true });
   const started = Date.now();
   await waitFor(p, "document.getElementById('send').dataset.state === 'failed'", 20000);
   const waited = Date.now() - started;
   assert.ok(await p.evaluate("document.querySelector('.results').innerText.includes('请求超时')"));
+  assertNoSummary(await formOutcome(p), "popup timeout");
   assert.equal(mock.requests.filter((r) => r.path === "/slow").length, 1, "double submit was blocked");
   await shoot(p, "popup-timeout", { popup: true });
   note("popup timeout", { approxMs: waited + 400 });
@@ -175,11 +188,13 @@ try {
   await setStorage({ webhooks: [hook("a", "Monica 收藏", "500")], defaultWebhookId: "a" });
   p = await openPopup();
   await sendAndSettle(p);
+  assertNoSummary(await formOutcome(p), "popup 500 before retry");
   await p.evaluate("(() => { const t = document.getElementById('content'); t.value += '\\n\\n补一句备注'; t.dispatchEvent(new Event('input')); })()");
   await p.evaluate("document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true }))");
   await waitFor(p, "document.getElementById('send').dataset.state === 'failed' && document.querySelectorAll('.result').length === 1");
   assert.equal(mock.requests.length, 2);
   assert.ok(mock.requests[1].content.endsWith("补一句备注"));
+  assertNoSummary(await formOutcome(p), "popup retry");
   note("popup retry via Ctrl+Enter resent edited content", { requests: mock.requests.length });
 
   // ---- popup: multi-target mixed results ---------------------------------
@@ -218,6 +233,7 @@ try {
   );
   assert.ok(mock.requests.every((r) => r.method === "POST" && r.bearer && r.bodyKeys?.join() === "content"));
   assert.equal(await p.evaluate("document.getElementById('send-label').textContent"), "重试 4 个失败项");
+  assertNoSummary(await formOutcome(p), "popup multi-target");
   await shoot(p, "popup-multi-mixed", { popup: true });
   note("popup multi-target", { rows });
 
