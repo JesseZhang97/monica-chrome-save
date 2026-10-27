@@ -172,7 +172,7 @@ try {
   assert.equal(await p.evaluate("document.getElementById('send').getAttribute('aria-busy')"), "true");
   assert.equal(await p.evaluate("document.getElementById('send').disabled"), true);
   assert.equal(await p.evaluate("document.getElementById('status').innerText"), "");
-  await p.evaluate("document.getElementById('send').click()"); // ignored while sending
+  await p.evaluate("document.getElementById('send').click()");
   await shoot(p, "popup-sending", { popup: true });
   const started = Date.now();
   await waitFor(p, "document.getElementById('send').dataset.state === 'failed'", 20000);
@@ -237,7 +237,6 @@ try {
   await shoot(p, "popup-multi-mixed", { popup: true });
   note("popup multi-target", { rows });
 
-  // All-ok multi-target: one saved row per destination, no summary line.
   await setStorage({
     webhooks: [hook("a", "Monica 收藏", "ok"), hook("b", "工作笔记", "ok")],
     defaultWebhookId: "a",

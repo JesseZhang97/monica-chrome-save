@@ -208,7 +208,6 @@ async function runSend(ids) {
   setStatus(statusEl, "");
   renderSendButton();
 
-  // One at a time so each row reports its own outcome as it lands.
   for (const id of ids) {
     inFlightId = id;
     renderResults();
