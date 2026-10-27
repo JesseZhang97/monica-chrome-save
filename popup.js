@@ -205,7 +205,7 @@ async function runSend(ids) {
   contentEl.readOnly = true;
   pickerEl.querySelector("summary").setAttribute("aria-disabled", "true");
   pickerEl.open = false;
-  setStatus(statusEl, ids.length > 1 ? `正在发送到 ${ids.length} 个目标…` : "正在发送…");
+  setStatus(statusEl, "");
   renderSendButton();
 
   // One at a time so each row reports its own outcome as it lands.
@@ -223,18 +223,12 @@ async function runSend(ids) {
   if (failed.length === 0) {
     phase = "done";
     renderResults();
-    setStatus(statusEl, `已保存到${quoteNames(batch)}`, "ok");
     renderSendButton();
     setTimeout(() => window.close(), CLOSE_AFTER_MS);
     return;
   }
   phase = "failed";
   renderResults();
-  setStatus(
-    statusEl,
-    batch.length > 1 ? `${failed.length} 个目标发送失败,内容已保留,可重试` : "发送失败,内容已保留,可重试",
-    "err"
-  );
   renderSendButton();
   sendEl.focus();
 }

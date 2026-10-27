@@ -80,8 +80,8 @@ Right-click on a link saves the current page title + **that link's href**. Selec
 | State | Popup | Right-click |
 | --- | --- | --- |
 | Sending | Button shows a spinner and is disabled (no double submit); textarea is read-only | — |
-| Success | Blue ✓ `已保存到「名称」`, popup closes after 0.9 s | Blue badge `OK` (clears after ~3 s), toast, tooltip |
-| Failure | Brick-red reason per target (orange for permission/config warnings), content kept, button becomes **重试** (retries failed targets only) | Red (or orange) badge with the status code (or `ERR` / `PERM` / `CFG`), toast, tooltip; the content is kept for resend |
+| Success | Row `✓ {名称} 已保存` and button `已保存`, popup closes after 0.9 s | Blue badge `OK` (clears after ~3 s), toast, tooltip |
+| Failure | Brick-red reason on each result row (orange for permission/config warnings), content kept, button becomes **重试** (retries failed targets only) | Red (or orange) badge with the status code (or `ERR` / `PERM` / `CFG`), toast, tooltip; the content is kept for resend |
 
 Failure reasons (always with the HTTP code when there is one; never the key or the response body):
 
