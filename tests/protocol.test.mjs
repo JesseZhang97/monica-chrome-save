@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import http from "node:http";
 import test from "node:test";
-import { buildContent, isConfigured, parseWebhookUrl, postToMonica } from "../lib/protocol.js";
+import { REQUEST_TIMEOUT_MS, buildContent, isConfigured, parseWebhookUrl, postToMonica } from "../lib/protocol.js";
 
 test("buildContent matches iOS template without selection", () => {
   assert.equal(
@@ -100,6 +100,39 @@ test("postToMonica reports HTTP status on error and does not include the key", a
   assert.equal(result.status, 401);
   assert.equal(result.message, "HTTP 401");
   assert.equal(JSON.stringify(result).includes("super-secret"), false);
+});
+
+async function listen(handler) {
+  const server = http.createServer(handler);
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  return { server, url: `http://127.0.0.1:${server.address().port}/` };
+}
+
+test("default request timeout is 15 seconds", () => {
+  assert.equal(REQUEST_TIMEOUT_MS, 15000);
+});
+
+test("postToMonica aborts after timeoutMs and reports a timeout", async () => {
+  const held = [];
+  const { server, url } = await listen((_req, res) => held.push(res));
+  const started = Date.now();
+  const result = await postToMonica({ webhookUrl: url, webhookKey: "k", content: "x", timeoutMs: 150 });
+  const elapsed = Date.now() - started;
+  held.forEach((res) => res.destroy());
+  server.close();
+  assert.equal(result.ok, false);
+  assert.equal(result.kind, "timeout");
+  assert.equal(result.status, 0);
+  assert.ok(elapsed >= 140 && elapsed < 2000, `elapsed ${elapsed}ms`);
+});
+
+test("postToMonica reports a dropped connection as a network error", async () => {
+  const { server, url } = await listen((req) => req.socket.destroy());
+  const result = await postToMonica({ webhookUrl: url, webhookKey: "k", content: "x", timeoutMs: 2000 });
+  server.close();
+  assert.equal(result.ok, false);
+  assert.equal(result.kind, "network");
+  assert.equal(result.status, 0);
 });
 
 test("missing config does not throw and explains itself", async () => {

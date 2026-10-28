@@ -1,0 +1,181 @@
+[
+  {
+    "step": "upgrade migration: v1 webhookUrl/webhookKey became default webhook 'Monica', legacy keys removed",
+    "from": "41d5abb (1.1.0)",
+    "to": "2.1.1"
+  },
+  {
+    "step": "screenshot popup-empty.jpg"
+  },
+  {
+    "step": "screenshot popup-success.jpg"
+  },
+  {
+    "step": "popup ok",
+    "text": "Monica 收藏 已保存 | 已保存"
+  },
+  {
+    "step": "screenshot popup-401.jpg"
+  },
+  {
+    "step": "popup 401",
+    "text": "Monica 收藏 密钥或地址不对(HTTP 401) | 重试"
+  },
+  {
+    "step": "screenshot popup-500.jpg"
+  },
+  {
+    "step": "popup 500",
+    "text": "Monica 收藏 Monica 服务端错误(HTTP 500) | 重试"
+  },
+  {
+    "step": "screenshot popup-network.jpg"
+  },
+  {
+    "step": "popup drop",
+    "text": "Monica 收藏 无法连接:请检查网络或 webhook 地址 | 重试"
+  },
+  {
+    "step": "screenshot popup-sending.jpg"
+  },
+  {
+    "step": "screenshot popup-timeout.jpg"
+  },
+  {
+    "step": "popup timeout",
+    "approxMs": 14818
+  },
+  {
+    "step": "popup retry via Ctrl+Enter resent edited content",
+    "requests": 2
+  },
+  {
+    "step": "screenshot popup-targets.jpg"
+  },
+  {
+    "step": "screenshot popup-multi-mixed.jpg"
+  },
+  {
+    "step": "popup multi-target",
+    "rows": [
+      [
+        "ok",
+        "Monica 收藏"
+      ],
+      [
+        "err",
+        "工作笔记"
+      ],
+      [
+        "err",
+        "稍后读"
+      ],
+      [
+        "err",
+        "家里 NAS"
+      ],
+      [
+        "warn",
+        "测试环境"
+      ]
+    ]
+  },
+  {
+    "step": "popup remembers last selection"
+  },
+  {
+    "step": "context menu rebuilt as submenu",
+    "menuItems": [
+      "Save to",
+      "save-to > Monica 收藏",
+      "save-to > 工作笔记(默认)",
+      "save-to > 稍后读",
+      "save-to > 家里 NAS",
+      "save-to > 测试环境"
+    ]
+  },
+  {
+    "step": "screenshot menu-toast-success.jpg"
+  },
+  {
+    "step": "menu save success",
+    "badge": "OK",
+    "title": "Save To Monica\n已保存到「Monica 收藏」"
+  },
+  {
+    "step": "screenshot menu-toast-401.jpg"
+  },
+  {
+    "step": "menu save 401 kept failure",
+    "badge": "401",
+    "failure": {
+      "content": "标题: 示例文章:如何整理网页收藏\n链接…",
+      "error": {
+        "kind": "http",
+        "status": 401
+      },
+      "failedAt": 1793118995706,
+      "webhookIds": [
+        "b"
+      ]
+    }
+  },
+  {
+    "step": "menu save on chrome:// page: badge + tooltip only",
+    "badge": "500",
+    "title": "Save To Monica\n保存到「稍后读」失败:Monica 服务端错误(HTTP 500)\n内容已保留,打开扩展可重发"
+  },
+  {
+    "step": "screenshot popup-last-failure.jpg"
+  },
+  {
+    "step": "screenshot popup-last-failure-resent.jpg"
+  },
+  {
+    "step": "popup resent kept failure and cleared it"
+  },
+  {
+    "step": "screenshot options-empty.jpg"
+  },
+  {
+    "step": "screenshot options-validation.jpg"
+  },
+  {
+    "step": "options validation",
+    "errors": [
+      "已有同名的 webhook",
+      "只支持 http:// 或 https:// 地址",
+      "请填写 Bearer key"
+    ]
+  },
+  {
+    "step": "screenshot options-list.jpg"
+  },
+  {
+    "step": "options list + per-row Test",
+    "statuses": [
+      [
+        "Monica 收藏",
+        "HTTP 200"
+      ],
+      [
+        "工作笔记",
+        "HTTP 401"
+      ],
+      [
+        "测试环境",
+        "未授权访问该域名,点“测试”或“编辑 → 保存”授权"
+      ]
+    ]
+  },
+  {
+    "step": "screenshot options-delete-confirm.jpg"
+  },
+  {
+    "step": "options delete with confirm",
+    "left": [
+      "Monica 收藏",
+      "测试环境"
+    ]
+  }
+]

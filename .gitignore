@@ -16,3 +16,6 @@ node_modules/
 pack/
 dist/
 build/
+
+# Store master rendered by scripts/generate-icons.py
+icons/logo-1024.png

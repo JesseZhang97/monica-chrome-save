@@ -1,177 +1,265 @@
-:root {
-  --ink: #12262c;
-  --muted: #5c6d73;
-  --paper: #f3efe6;
-  --card: #fffdf8;
-  --line: #d9d1c3;
-  --teal: #0f766e;
-  --teal-ink: #f4faf9;
-  --err: #9f1239;
-  --ok: #0f766e;
-  --warn: #b45309;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  min-height: 100%;
-}
+/* Options layout. Tokens and base controls come from styles/ui.css. */
 
 body {
-  font: 16px/1.5 "Segoe UI", system-ui, sans-serif;
-  color: var(--ink);
-  background:
-    radial-gradient(1200px 400px at 10% -10%, #d7efe9 0%, transparent 55%),
-    var(--paper);
+  font-size: 15px;
 }
 
 main {
-  max-width: 36rem;
+  max-width: 46rem;
   margin: 0 auto;
-  padding: 2.5rem 1.25rem 3rem;
+  padding: 40px var(--space-5) 48px;
+}
+
+.page-head {
+  margin-bottom: var(--space-6);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .eyebrow {
-  margin: 0 0 0.35rem;
-  letter-spacing: 0.08em;
+  margin: 0;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  font-size: 0.72rem;
-  font-weight: 650;
-  color: var(--teal);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand);
 }
 
 h1 {
-  margin: 0 0 0.5rem;
-  font-size: 1.75rem;
-  letter-spacing: -0.02em;
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.25;
+  color: var(--navy);
+}
+
+h2 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--navy);
 }
 
 .lede {
-  margin: 0 0 1.5rem;
+  margin: 0;
   color: var(--muted);
 }
 
-code,
-pre {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-
 code {
-  font-size: 0.88em;
-  background: #efe8d8;
-  padding: 0.1em 0.35em;
-  border-radius: 4px;
+  padding: 1px 5px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--navy);
+  font-size: 0.86em;
 }
 
-form,
-.notes {
-  background: var(--card);
+.panel {
+  margin-bottom: var(--space-5);
+  padding: var(--space-5);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 1.25rem 1.25rem 1.1rem;
-  box-shadow: 0 10px 30px rgba(18, 38, 44, 0.06);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 
-label {
-  display: block;
-  margin-bottom: 1rem;
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--line);
 }
 
-label span {
-  display: block;
-  margin-bottom: 0.35rem;
-  font-size: 0.82rem;
+/* ---- list --------------------------------------------------------------- */
+
+.hooks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hook {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 0;
+  /* Dashed like the tear line between stamps. */
+  border-top: 1px dashed var(--line);
+}
+
+.hook:first-child {
+  border-top: 0;
+}
+
+.hook-main {
+  min-width: 0;
+}
+
+.hook-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
   font-weight: 650;
+  color: var(--navy);
 }
 
-input {
-  width: 100%;
-  padding: 0.65rem 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--ink);
-  font: inherit;
+.hook-meta {
+  display: flex;
+  gap: 6px;
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
 }
 
-input:focus {
-  outline: 2px solid var(--teal);
-  outline-offset: 1px;
+.hook-status {
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hook-status:empty {
+  display: none;
+}
+
+.hook-actions {
+  display: flex;
+  flex-wrap: wrap;
+  flex: none;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.empty {
+  padding: var(--space-6) var(--space-4) var(--space-4);
+  text-align: center;
+}
+
+.empty-title {
+  margin: var(--space-4) 0 var(--space-1);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--navy);
+}
+
+.empty-text {
+  max-width: 26rem;
+  margin: 0 auto var(--space-5);
+  color: var(--muted);
+}
+
+/* ---- editor ------------------------------------------------------------- */
+
+.field {
+  margin: var(--space-4) 0;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--navy);
+}
+
+.field-hint,
+.field-error {
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+
+.field-hint {
+  color: var(--muted);
+}
+
+.field-error {
+  color: var(--err);
+  font-weight: 600;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-5);
+  font-size: 14px;
 }
 
 .actions {
   display: flex;
-  gap: 0.6rem;
-  margin-top: 0.25rem;
-}
-
-button {
-  appearance: none;
-  border: 0;
-  border-radius: 8px;
-  padding: 0.55rem 1rem;
-  font: inherit;
-  font-weight: 650;
-  cursor: pointer;
-  background: var(--teal);
-  color: var(--teal-ink);
-}
-
-button.secondary {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--line);
-}
-
-button:focus-visible {
-  outline: 2px solid var(--teal);
-  outline-offset: 2px;
+  gap: var(--space-2);
 }
 
 .status {
-  min-height: 1.5em;
-  margin: 0.9rem 0 0;
-  font-size: 0.92rem;
-  font-weight: 650;
+  margin: var(--space-3) 0 0;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.status[data-kind="ok"] {
-  color: var(--ok);
+.status:empty {
+  display: none;
 }
 
-.status[data-kind="err"] {
-  color: var(--err);
-}
+/* ---- notes -------------------------------------------------------------- */
 
-.status[data-kind="warn"] {
-  color: var(--warn);
-}
-
-.notes {
-  margin-top: 1rem;
-}
-
-.notes h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-}
-
+/* Same cream ruled paper as the popup compose box. */
 .notes pre {
-  margin: 0 0 0.75rem;
-  padding: 0.75rem 0.85rem;
-  background: #12262c;
-  color: #e7f3ef;
-  border-radius: 8px;
-  font-size: 0.82rem;
+  margin: var(--space-3) 0;
+  padding: var(--space-2) 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(transparent 19px, var(--rule) 19px) 0 0 / 100% 20px content-box, var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 20px;
   overflow: auto;
 }
 
 .notes p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 14px;
+}
+
+/* ---- confirm dialog ----------------------------------------------------- */
+
+dialog {
+  max-width: 26rem;
+  padding: calc(var(--space-5) + 5px) var(--space-5) var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--airmail) top / 100% 5px no-repeat, var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-card);
+}
+
+dialog::backdrop {
+  background: var(--backdrop);
+}
+
+dialog p {
+  color: var(--muted);
+}
+
+@media (max-width: 600px) {
+  .hook {
+    flex-direction: column;
+  }
+
+  .hook-actions {
+    justify-content: flex-start;
+  }
 }

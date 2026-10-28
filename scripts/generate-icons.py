@@ -1,89 +1,62 @@
 #!/usr/bin/env python3
-"""Placeholder toolbar icons (stdlib only)."""
+"""Render icons/logo.svg to the extension PNGs with ffmpeg (librsvg decoder).
+
+Usage: python3 scripts/generate-icons.py [--master PATH]
+
+Writes icons/icon{16,32,48,128}.png and a 1024 px store master
+(icons/logo-1024.png by default). Each size is rasterized straight from the
+vector source at its target size instead of downscaling one big bitmap, so
+the 8-unit grid in the SVG lands on whole pixels at 16/32/48 px.
+"""
 
 from __future__ import annotations
 
+import argparse
 import pathlib
-import struct
-import zlib
+import shutil
+import subprocess
+import tempfile
+import xml.etree.ElementTree as ET
 
-ROOT = pathlib.Path(__file__).resolve().parents[1] / "icons"
-BG = (20, 63, 74, 255)
-GLYPH = (244, 247, 246, 255)
-ACCENT = (94, 234, 212, 255)
-
-
-def png(width: int, height: int, rows: list[bytes]) -> bytes:
-    def chunk(tag: bytes, data: bytes) -> bytes:
-        crc = zlib.crc32(tag + data) & 0xFFFFFFFF
-        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", crc)
-
-    raw = b"".join(b"\x00" + row for row in rows)
-    ihdr = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
-    return b"".join(
-        [
-            b"\x89PNG\r\n\x1a\n",
-            chunk(b"IHDR", ihdr),
-            chunk(b"IDAT", zlib.compress(raw, 9)),
-            chunk(b"IEND", b""),
-        ]
-    )
+ICONS = pathlib.Path(__file__).resolve().parents[1] / "icons"
+SOURCE = ICONS / "logo.svg"
+SIZES = (16, 32, 48, 128)
+SVG_NS = "http://www.w3.org/2000/svg"
 
 
-def in_rounded_rect(x: float, y: float, size: int, radius: float) -> bool:
-    r = max(radius, 0.0)
-    cx = min(max(x, r), size - 1 - r)
-    cy = min(max(y, r), size - 1 - r)
-    dx = x - cx
-    dy = y - cy
-    return dx * dx + dy * dy <= r * r + 0.25
+def sized_svg(size: int) -> bytes:
+    ET.register_namespace("", SVG_NS)
+    root = ET.parse(SOURCE).getroot()
+    root.set("width", str(size))
+    root.set("height", str(size))
+    return ET.tostring(root, encoding="utf-8", xml_declaration=True)
 
 
-def in_bookmark(nx: float, ny: float) -> bool:
-    # Classic bookmark: rectangle with an inverted-V cut at the bottom.
-    left, right = 0.32, 0.68
-    top, bottom, notch = 0.18, 0.84, 0.66
-    if nx < left or nx > right or ny < top or ny > bottom:
-        return False
-    if ny <= notch:
-        return True
-    # two triangles from the bottom corners up to (0.50, notch)
-    t = (ny - notch) / (bottom - notch)
-    half = (right - left) / 2 * (1 - t)
-    return abs(nx - 0.50) <= half
-
-
-def in_accent_bar(nx: float, ny: float) -> bool:
-    return 0.32 <= nx <= 0.68 and 0.18 <= ny <= 0.24
-
-
-def render(size: int) -> bytes:
-    radius = size * (0.22 if size >= 32 else 0.18)
-    rows: list[bytes] = []
-    for y in range(size):
-        row = bytearray()
-        for x in range(size):
-            if not in_rounded_rect(x, y, size, radius):
-                row.extend((0, 0, 0, 0))
-                continue
-            nx = (x + 0.5) / size
-            ny = (y + 0.5) / size
-            if in_accent_bar(nx, ny):
-                row.extend(ACCENT)
-            elif in_bookmark(nx, ny):
-                row.extend(GLYPH)
-            else:
-                row.extend(BG)
-        rows.append(bytes(row))
-    return png(size, size, rows)
+def render(size: int, out: pathlib.Path) -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        svg = pathlib.Path(tmp) / "logo.svg"
+        svg.write_bytes(sized_svg(size))
+        subprocess.run(
+            [
+                "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+                "-i", str(svg),
+                "-frames:v", "1", "-pix_fmt", "rgba", "-compression_level", "9",
+                str(out),
+            ],
+            check=True,
+        )
+    print(f"wrote {out} ({out.stat().st_size} bytes)")
 
 
 def main() -> None:
-    ROOT.mkdir(parents=True, exist_ok=True)
-    for size in (16, 32, 48, 128):
-        path = ROOT / f"icon{size}.png"
-        path.write_bytes(render(size))
-        print(f"wrote {path}")
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--master", type=pathlib.Path, default=ICONS / "logo-1024.png")
+    args = parser.parse_args()
+    if shutil.which("ffmpeg") is None:
+        raise SystemExit("ffmpeg (built with --enable-librsvg) is required")
+    for size in SIZES:
+        render(size, ICONS / f"icon{size}.png")
+    render(1024, args.master)
 
 
 if __name__ == "__main__":

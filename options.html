@@ -1,71 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Monica Chrome Save — Options</title>
+    <title>Save To Monica · Webhook 设置</title>
+    <link rel="stylesheet" href="styles/ui.css" />
     <link rel="stylesheet" href="options.css" />
   </head>
   <body>
     <main>
-      <header>
-        <p class="eyebrow">Monica Chrome Save</p>
-        <h1>Webhook settings</h1>
+      <header class="page-head">
+        <div class="brand">
+          <span class="stamp"><img src="icons/logo.svg" alt="" width="40" height="40" /></span>
+          <div>
+            <p class="eyebrow">Save To Monica</p>
+            <h1>Webhook 设置</h1>
+          </div>
+        </div>
         <p class="lede">
-          Same protocol as the iOS Shortcut: <code>POST</code> JSON
-          <code>{ "content": "…" }</code> with a Bearer key. The key is stored
-          only in this browser profile.
+          与 iOS 快捷指令同一协议:<code>POST</code> JSON <code>{ "content": "…" }</code>,
+          带 Bearer key。可以添加多个 webhook 并命名,key 只保存在这个浏览器配置里。
         </p>
       </header>
 
-      <form id="form" autocomplete="off">
-        <label>
-          <span>Webhook URL</span>
-          <input
-            id="webhookUrl"
-            name="webhookUrl"
-            type="url"
-            inputmode="url"
-            spellcheck="false"
-            placeholder="https://…"
-            required
-          />
-        </label>
-
-        <label>
-          <span>Bearer key</span>
-          <input
-            id="webhookKey"
-            name="webhookKey"
-            type="password"
-            spellcheck="false"
-            autocomplete="off"
-            placeholder="Paste key — never committed"
-            required
-          />
-        </label>
-
-        <div class="actions">
-          <button type="submit" id="save">Save</button>
-          <button type="button" id="test" class="secondary">Test</button>
+      <section class="panel" aria-labelledby="list-title">
+        <div class="panel-head">
+          <h2 id="list-title">Webhook 列表</h2>
+          <button type="button" id="add">添加 webhook</button>
         </div>
 
-        <p id="status" class="status" role="status" aria-live="polite"></p>
-      </form>
+        <div id="empty" class="empty" hidden>
+          <span class="stamp"><img src="icons/logo.svg" alt="" width="60" height="60" /></span>
+          <p class="empty-title">还没有 webhook</p>
+          <p class="empty-text">
+            添加 Monica 的入库 webhook 地址和 Bearer key 后,就可以从工具栏或右键菜单保存网页。
+          </p>
+          <button type="button" id="add-empty">添加第一个 webhook</button>
+        </div>
 
-      <section class="notes">
-        <h2>What Save sends</h2>
-        <pre>标题: {page title}
+        <ul id="list" class="hooks" aria-labelledby="list-title"></ul>
+        <p id="page-status" class="status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="editor" class="panel" aria-labelledby="editor-title" hidden>
+        <h2 id="editor-title">添加 webhook</h2>
+        <form id="form" novalidate autocomplete="off">
+          <div class="field">
+            <label for="name">名称</label>
+            <input id="name" name="name" type="text" maxlength="40" placeholder="例如:Monica 收藏" aria-describedby="name-error" />
+            <p id="name-error" class="field-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="url">Webhook URL</label>
+            <input id="url" name="url" type="url" inputmode="url" spellcheck="false" placeholder="https://…" aria-describedby="url-error" />
+            <p id="url-error" class="field-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="key">Bearer key</label>
+            <input id="key" name="key" type="password" spellcheck="false" autocomplete="off" aria-describedby="key-hint key-error" />
+            <p id="key-hint" class="field-hint">只保存在本机,不会显示或上传到别处。</p>
+            <p id="key-error" class="field-error"></p>
+          </div>
+
+          <label class="check">
+            <input id="makeDefault" type="checkbox" />
+            <span>设为默认 webhook</span>
+          </label>
+
+          <div class="actions">
+            <button type="submit" id="save">保存</button>
+            <button type="button" id="cancel" class="secondary">取消</button>
+          </div>
+          <p id="form-status" class="status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="panel notes" aria-labelledby="notes-title">
+        <h2 id="notes-title">发送的内容</h2>
+        <pre>标题: {页面标题}
 链接: {url}
 
-{selected text, if any}</pre>
+{选中的文字或备注,可为空}</pre>
         <p>
-          Test posts that template with a dummy title/URL and reports
-          <strong>HTTP status only</strong> — it never prints the key or response body.
-          Chrome will ask for permission to contact the webhook origin when you Save or Test.
+          “测试”会用一条示例内容请求该 webhook,只显示 HTTP 状态码,不会显示 key 或响应内容。
+          保存或测试时,Chrome 会请求访问该 webhook 所在域名的权限。
         </p>
       </section>
     </main>
+
+    <dialog id="confirm" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+      <form method="dialog">
+        <h2 id="confirm-title">删除 webhook?</h2>
+        <p id="confirm-text"></p>
+        <div class="actions">
+          <button value="delete" class="danger">删除</button>
+          <button value="cancel" class="secondary" autofocus>取消</button>
+        </div>
+      </form>
+    </dialog>
+
+    <template id="row">
+      <li class="hook">
+        <div class="hook-main">
+          <p class="hook-name"><span class="name"></span><span class="pill">默认</span></p>
+          <p class="hook-meta"><span class="host"></span><span class="sep" aria-hidden="true">·</span><span class="key" aria-label="key 已隐藏">••••••••</span></p>
+          <p class="hook-status" role="status" aria-live="polite"></p>
+        </div>
+        <div class="hook-actions">
+          <button type="button" class="secondary small" data-action="test">测试</button>
+          <button type="button" class="secondary small" data-action="edit">编辑</button>
+          <button type="button" class="secondary small" data-action="default">设为默认</button>
+          <button type="button" class="ghost-danger small" data-action="delete">删除</button>
+        </div>
+      </li>
+    </template>
+
     <script type="module" src="options.js"></script>
   </body>
 </html>
